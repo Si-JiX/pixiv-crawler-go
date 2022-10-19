@@ -1,5 +1,5 @@
 package config
 
-import "sss/structs"
+import "pixiv-cil/structs"
 
 var ImageList []structs.Illusts

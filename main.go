@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
+	"pixiv-cil/config"
+	"pixiv-cil/download"
+
+	"gopkg.in/urfave/cli.v1"
 	"regexp"
-	"sss/config"
-	"sss/download"
 )
 
 var CommandLines = struct {

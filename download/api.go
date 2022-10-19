@@ -3,9 +3,9 @@ package download
 import (
 	"encoding/json"
 	"fmt"
-	"sss/config"
-	"sss/structs"
-	"sss/utils"
+	"pixiv-cil/config"
+	"pixiv-cil/structs"
+	"pixiv-cil/utils"
 )
 
 func GET_AUTHOR(author_id string, page int) {

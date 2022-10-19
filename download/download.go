@@ -3,8 +3,8 @@ package download
 import (
 	"fmt"
 	"os"
-	"sss/config"
-	"sss/utils"
+	"pixiv-cil/config"
+	"pixiv-cil/utils"
 )
 
 func ImageDownloader(ImageURL, ImageName string) {
