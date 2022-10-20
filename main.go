@@ -42,14 +42,14 @@ var implement = func(c *cli.Context) error {
 			fmt.Println("url error", CommandLines.URL)
 		}
 	} else if CommandLines.Name != "" {
-		download.GET_AUTHOR(CommandLines.Name, 1)
-		fmt.Println(len(config.ImageList), "images found")
-		for index, value := range config.ImageList {
-			fmt.Println("index:", index, "\t\ttitle:", value.Title, "\t\tid:", value.ID)
-		}
-		for _, value := range config.ImageList {
-			download.ImageDownloader(value.ImageUrls.Large, value.Title)
-		}
+		//download.GET_AUTHOR(CommandLines.Name, 1)
+		//fmt.Println(len(config.ImageList), "images found")
+		//for index, value := range config.ImageList {
+		//	fmt.Println("index:", index, "\t\ttitle:", value.Title, "\t\tid:", value.ID)
+		//}
+		//for _, value := range config.ImageList {
+		//	download.ImageDownloader(value.ImageUrls.Large, value.Title)
+		//}
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}
@@ -68,10 +68,14 @@ func init_command() {
 	}
 
 }
+
+var app *pixiv.AppPixivAPI
+
 func init() {
 	var PIXAPI_TOKEN_KEY = ""
 	var PIXAPI_RE_TOKEN_KEY = ""
 	var PIXAPI_TOKEN_TIME_KEY = time.Now()
+	app = pixiv.NewApp()
 	f, err := os.ReadFile("author_key.txt")
 	if err == nil {
 		PIXAPI_TOKEN_KEY = strings.Split(string(f), "\n")[0]
@@ -90,13 +94,7 @@ func init() {
 
 }
 
-func main() {
-	//if !config.IsExist("imageFile") {
-	//	_ = os.Mkdir("imageFile", 0777)
-	//}
-	//init_command()
-
-	app := pixiv.NewApp()
+func ShellUserDetail() {
 	user, err := app.UserDetail(36966416) // print user detail information, exclude illusts collections
 	if err != nil {
 		fmt.Println(err)
@@ -113,7 +111,36 @@ func main() {
 		//fmt.Println(user.User.Name)
 		//fmt.Println(user.User.ProfileImages)
 	}
-	//illusts, next, err := app.UserIllusts(uid, "illust", 0)
+}
+
+func GET_AUTHOR(author_id uint64, page int) {
+	var illusts []pixiv.Illust
+	var next int
+	var err error
+	illusts, next, err = app.UserIllusts(author_id, "illust", page)
+	fmt.Println("next:", next)
+	fmt.Println("err:", err)
+	for _, Illust := range illusts {
+		config.ImageList = append(config.ImageList, Illust)
+	}
+	if err == nil && next != 0 {
+		GET_AUTHOR(author_id, next)
+	} else {
+		fmt.Println("一共", len(config.ImageList), "张图片")
+	}
+
+}
+func main() {
+	//if !config.IsExist("imageFile") {
+	//	_ = os.Mkdir("imageFile", 0777)
+	//}
+	//init_command()
+
+	GET_AUTHOR(36966416, 0)
+	for i, illust := range config.ImageList {
+		fmt.Println(i, illust.Title)
+	}
+
 	//illusts, next, err := app.UserBookmarksIllust(uid, "public", 0, "")
 	//illusts, next, err := app.IllustFollow("public", 0)
 }

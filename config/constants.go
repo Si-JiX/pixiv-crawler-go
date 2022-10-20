@@ -1,5 +1,7 @@
 package config
 
-import "pixiv-cil/structs"
+import (
+	pixiv "pixiv-cil/pixiv_api"
+)
 
-var ImageList []structs.Illusts
+var ImageList []pixiv.Illust
