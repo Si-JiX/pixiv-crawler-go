@@ -145,6 +145,7 @@ func LoadAuth(token, refreshToken string, tokenDeadline time.Time) (*Account, er
 
 func refreshAuth() (*Account, error) {
 	if time.Now().Before(_tokenDeadline) {
+		fmt.Println("Token not expired")
 		return nil, nil
 	}
 	if _refreshToken == "" {

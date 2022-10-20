@@ -1,14 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
-
-	"gopkg.in/urfave/cli.v1"
+	pixiv "pixiv-cil/pixiv_api"
 	"regexp"
+	"strings"
+	"time"
 )
 
 var CommandLines = struct {
@@ -65,10 +68,52 @@ func init_command() {
 	}
 
 }
+func init() {
+	var PIXAPI_TOKEN_KEY = ""
+	var PIXAPI_RE_TOKEN_KEY = ""
+	var PIXAPI_TOKEN_TIME_KEY = time.Now()
+	f, err := os.ReadFile("author_key.txt")
+	if err == nil {
+		PIXAPI_TOKEN_KEY = strings.Split(string(f), "\n")[0]
+		PIXAPI_RE_TOKEN_KEY = strings.Split(string(f), "\n")[1]
+		fmt.Println(PIXAPI_TOKEN_KEY)
+		fmt.Println(PIXAPI_RE_TOKEN_KEY)
+		account, ok := pixiv.LoadAuth(PIXAPI_TOKEN_KEY, PIXAPI_RE_TOKEN_KEY, PIXAPI_TOKEN_TIME_KEY)
+		if ok != nil {
+			fmt.Println(ok)
+		} else {
+			fmt.Println("account:", account.Account)
+		}
+	} else {
+		panic(err)
+	}
+
+}
 
 func main() {
-	if !config.IsExist("imageFile") {
-		_ = os.Mkdir("imageFile", 0777)
+	//if !config.IsExist("imageFile") {
+	//	_ = os.Mkdir("imageFile", 0777)
+	//}
+	//init_command()
+
+	app := pixiv.NewApp()
+	user, err := app.UserDetail(36966416) // print user detail information, exclude illusts collections
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		//fmt.Println(user.Profile)
+		//fmt.Println(user.ProfilePublicity)
+		str, err := json.Marshal(user)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(string(str))
+		}
+		fmt.Println(user.Workspace)
+		//fmt.Println(user.User.Name)
+		//fmt.Println(user.User.ProfileImages)
 	}
-	init_command()
+	//illusts, next, err := app.UserIllusts(uid, "illust", 0)
+	//illusts, next, err := app.UserBookmarksIllust(uid, "public", 0, "")
+	//illusts, next, err := app.IllustFollow("public", 0)
 }
