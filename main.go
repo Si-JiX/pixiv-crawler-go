@@ -22,7 +22,7 @@ var implement = func(c *cli.Context) error {
 			fmt.Println("url error", config.CommandLines.URL)
 		}
 	} else if config.CommandLines.AuthorID != 0 {
-		GET_AUTHOR(uint64(config.CommandLines.AuthorID), 0)
+		download.GET_AUTHOR(uint64(config.CommandLines.AuthorID), 0)
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}
@@ -32,7 +32,7 @@ var implement = func(c *cli.Context) error {
 func init() {
 	cli_app := cli.NewApp()
 	cli_app.Name = "image downloader"
-	cli_app.Version = "V.1.0.0"
+	cli_app.Version = "V.1.0.1"
 	cli_app.Usage = ""
 	cli_app.Flags = config.CommandLineFlag
 	cli_app.Action = implement
@@ -78,28 +78,14 @@ func ShellUserDetail() {
 	}
 }
 
-func GET_AUTHOR(author_id uint64, page int) {
-	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
-	fmt.Println("next:", next)
-	fmt.Println("err:", err)
-	for _, Illust := range illusts {
-		config.ImageList = append(config.ImageList, Illust)
-	}
-	if err == nil && next != 0 {
-		GET_AUTHOR(author_id, next)
-	} else {
-		fmt.Println("一共", len(config.ImageList), "张图片")
-	}
-
-}
 func main() {
 	//if !config.IsExist("imageFile") {
 	//	_ = os.Mkdir("imageFile", 0777)
 	//}
 	//init_command()
-	for i, illust := range config.ImageList {
-		fmt.Println(i, illust.Title)
-	}
+	//for i, illust := range config.ImageList {
+	//	fmt.Println(i, illust.Title)
+	//}
 
 	//illusts, next, err := app.UserBookmarksIllust(uid, "public", 0, "")
 	//illusts, next, err := app.IllustFollow("public", 0)
