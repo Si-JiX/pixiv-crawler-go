@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"log"
@@ -10,6 +9,10 @@ import (
 	"pixiv-cil/download"
 	"regexp"
 )
+
+func init() {
+	config.App = config.INIT_PIXIV_AUTH() // init pixiv auth
+}
 
 var implement = func(c *cli.Context) error {
 	if config.CommandLines.IllustID != 0 {
@@ -28,28 +31,24 @@ var implement = func(c *cli.Context) error {
 	return nil
 }
 
-func init() {
-	config.INIT_PIXIV_AUTH() // init pixiv auth
-}
-
-func ShellUserDetail() {
-	user, err := config.App.UserDetail(36966416) // print user detail information, exclude illusts collections
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		//fmt.Println(user.Profile)
-		//fmt.Println(user.ProfilePublicity)
-		str, err := json.Marshal(user)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(string(str))
-		}
-		fmt.Println(user.Workspace)
-		//fmt.Println(user.User.Name)
-		//fmt.Println(user.User.ProfileImages)
-	}
-}
+//func ShellUserDetail() {
+//	user, err :=  App.UserDetail(36966416) // print user detail information, exclude illusts collections
+//	if err != nil {
+//		fmt.Println(err)
+//	} else {
+//		//fmt.Println(user.Profile)
+//		//fmt.Println(user.ProfilePublicity)
+//		str, err := json.Marshal(user)
+//		if err != nil {
+//			fmt.Println(err)
+//		} else {
+//			fmt.Println(string(str))
+//		}
+//		fmt.Println(user.Workspace)
+//		//fmt.Println(user.User.Name)
+//		//fmt.Println(user.User.ProfileImages)
+//	}
+//}
 
 func main() {
 	config.NewFile("imageFile")

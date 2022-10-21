@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"pixiv-cil/utils"
 	"strconv"
 )
 
@@ -19,8 +20,8 @@ func Input() string {
 // INT string converted to type int.
 func INT(s string) int {
 	sLen := len(s)
-	if IntSize == 32 && (0 < sLen && sLen < 10) ||
-		IntSize == 64 && (0 < sLen && sLen < 19) {
+	if utils.IntSize == 32 && (0 < sLen && sLen < 10) ||
+		utils.IntSize == 64 && (0 < sLen && sLen < 19) {
 		// Fast path for small integers that fit int type.
 		s0 := s
 		if s[0] == '-' || s[0] == '+' {

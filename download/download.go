@@ -3,6 +3,7 @@ package download
 import (
 	"fmt"
 	"pixiv-cil/config"
+	pixiv "pixiv-cil/pixiv_api"
 	"strconv"
 )
 
@@ -29,15 +30,17 @@ func CurrentDownloader(IllustID interface{}) {
 	}
 }
 
+var ImageList []pixiv.Illust
+
 func GET_AUTHOR(author_id uint64, page int) {
 	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
 	for _, Illust := range illusts {
-		config.ImageList = append(config.ImageList, Illust)
+		ImageList = append(ImageList, Illust)
 	}
 	if err == nil && next != 0 {
 		GET_AUTHOR(author_id, next)
 	} else {
-		fmt.Println("一共", len(config.ImageList), "张图片")
+		fmt.Println("一共", len(ImageList), "张图片")
 	}
 
 }

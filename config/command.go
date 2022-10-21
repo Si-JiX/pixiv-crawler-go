@@ -5,6 +5,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"os"
 	pixiv "pixiv-cil/pixiv_api"
+	"pixiv-cil/utils"
 	"strings"
 )
 
@@ -42,12 +43,11 @@ var CommandLineFlag = []cli.Flag{
 	},
 }
 
-func INIT_PIXIV_AUTH() {
-	App = pixiv.NewApp()
+func INIT_PIXIV_AUTH() *pixiv.AppPixivAPI {
 	if f, ok := os.ReadFile("author_key.txt"); ok == nil {
-		PIXAPI_TOKEN_KEY = strings.Split(string(f), "\n")[0]
-		PIXAPI_RE_TOKEN_KEY = strings.Split(string(f), "\n")[1]
-		account, state := pixiv.LoadAuth(PIXAPI_TOKEN_KEY, PIXAPI_RE_TOKEN_KEY, PIXAPI_TOKEN_TIME_KEY)
+		utils.PIXAPI_TOKEN_KEY = strings.Split(string(f), "\n")[0]
+		utils.PIXAPI_RE_TOKEN_KEY = strings.Split(string(f), "\n")[1]
+		account, state := pixiv.LoadAuth(utils.PIXAPI_TOKEN_KEY, utils.PIXAPI_RE_TOKEN_KEY, utils.PIXAPI_TOKEN_TIME_KEY)
 		if state != nil {
 			fmt.Println(state)
 		} else {
@@ -56,4 +56,5 @@ func INIT_PIXIV_AUTH() {
 	} else {
 		panic(ok)
 	}
+	return pixiv.NewApp()
 }
