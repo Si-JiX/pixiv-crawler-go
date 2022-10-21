@@ -64,14 +64,9 @@ type userDetailParams struct {
 }
 
 func (a *AppPixivAPI) UserDetail(uid uint64) (*UserDetail, error) {
-	params := &userDetailParams{
-		UserID: uid,
-		Filter: "for_ios",
-	}
-	detail := &UserDetail{
-		User: &User{},
-	}
-	if err := a.request(DETAIL, params, detail, true); err != nil {
+	params := &userDetailParams{UserID: uid, Filter: "for_ios"}
+	detail := &UserDetail{User: &User{}}
+	if err := a.request(USER_DETAIL, params, detail, true); err != nil {
 		return nil, err
 	}
 	return detail, nil
@@ -93,7 +88,7 @@ func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]Illust, 
 		Offset: offset,
 	}
 	data := &IllustsResponse{}
-	if err := a.request(AUTHOR, params, data, true); err != nil {
+	if err := a.request(USER_AUTHOR, params, data, true); err != nil {
 		return nil, 0, err
 	}
 	next, err := parseNextPageOffset(data.NextURL)
@@ -132,13 +127,9 @@ type illustFollowParams struct {
 
 // IllustFollow restrict: [public, private]
 func (a *AppPixivAPI) IllustFollow(restrict string, offset int) ([]Illust, int, error) {
-	path := "v2/illust/follow"
-	params := &illustFollowParams{
-		Restrict: restrict,
-		Offset:   offset,
-	}
+	params := &illustFollowParams{Restrict: restrict, Offset: offset}
 	data := &IllustsResponse{}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(FOLLOW, params, data, true); err != nil {
 		return nil, 0, err
 	}
 	next, err := parseNextPageOffset(data.NextURL)
@@ -217,7 +208,6 @@ type illustCommentsParams struct {
 
 // IllustComments Comments posted in a pixiv artwork
 func (a *AppPixivAPI) IllustComments(illustID uint64, offset int, includeTotalComments bool) (*IllustComments, error) {
-	path := "v1/illust/comments"
 	data := &IllustComments{}
 	params := &illustCommentsParams{
 		IllustID:             illustID,
@@ -225,10 +215,9 @@ func (a *AppPixivAPI) IllustComments(illustID uint64, offset int, includeTotalCo
 		Offset:               offset,
 	}
 
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(COMMENTS, params, data, true); err != nil {
 		return nil, err
 	}
-
 	return data, nil
 }
 
@@ -261,7 +250,6 @@ type illustRelatedParams struct {
 
 // IllustRelated returns Related works
 func (a *AppPixivAPI) IllustRelated(illustID uint64, filter string, seedIllustIDs []string) (*IllustsResponse, error) {
-	path := "v2/illust/related"
 	data := &IllustsResponse{}
 	if filter == "" {
 		filter = "for_ios"
@@ -274,7 +262,7 @@ func (a *AppPixivAPI) IllustRelated(illustID uint64, filter string, seedIllustID
 		params.SeedIllustIDs = seedIllustIDs
 	}
 
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(RELATED, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -296,13 +284,12 @@ type illustRecommendedParams struct {
 //
 // contentType: [illust, manga]
 func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*IllustRecommended, error) {
-	path := "v1/illust/recommended-nologin"
+	path := RECOMMENDED_NO_LOGIN
 	if requireAuth {
-		path = "v1/illust/recommended"
+		path = RECOMMENDED
 	}
 
 	data := &IllustRecommended{}
-
 	params := &illustRecommendedParams{
 		ContentType:                  contentType,
 		IncludeRankingLabel:          includeRankingLabel,
