@@ -112,7 +112,7 @@ type userBookmarkIllustsParams struct {
 }
 
 // UserBookmarksIllust restrict: [public, private]
-func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, restrict string, maxBookmarkID int, tag string) ([]Illust, int, error) {
+func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag string) ([]Illust, int, error) {
 	path := "v1/user/bookmarks/illust"
 	params := &userBookmarkIllustsParams{
 		UserID:        uid,
@@ -600,7 +600,7 @@ func (a *AppPixivAPI) ShowcaseArticle(showcaseID string) (*ShowcaseArticle, erro
 	}
 
 	s := a.sling.New().Base(base + "/")
-	s.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+	s.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
 	s.Set("Referer", base)
 
 	if _, err := s.Get(path).QueryStruct(params).ReceiveSuccess(data); err != nil {

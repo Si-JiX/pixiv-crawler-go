@@ -30,17 +30,6 @@ var implement = func(c *cli.Context) error {
 
 func init() {
 	config.INIT_PIXIV_AUTH() // init pixiv auth
-	cli_app := cli.NewApp()
-	cli_app.Name = "image downloader"
-	cli_app.Version = "V.1.0.9"
-	cli_app.Usage = "download image from pixiv "
-	cli_app.Flags = config.CommandLineFlag
-	cli_app.Action = implement
-	if err := cli_app.Run(os.Args); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(config.ShowFileList("imageFile"))
 }
 
 func ShellUserDetail() {
@@ -64,11 +53,14 @@ func ShellUserDetail() {
 
 func main() {
 	config.NewFile("imageFile")
-	//init_command()
-	//for i, illust := range config.ImageList {
-	//	fmt.Println(i, illust.Title)
-	//}
-
-	//illusts, next, err := app.UserBookmarksIllust(uid, "public", 0, "")
-	//illusts, next, err := app.IllustFollow("public", 0)
+	cli_app := cli.NewApp()
+	cli_app.Name = "image downloader"
+	cli_app.Version = "V.1.0.9"
+	cli_app.Usage = "download image from pixiv "
+	cli_app.Flags = config.CommandLineFlag
+	cli_app.Action = implement
+	if err := cli_app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(config.ShowFileList("imageFile"))
 }
