@@ -62,5 +62,4 @@ func main() {
 	if err := cli_app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(config.ShowFileList("imageFile"))
 }

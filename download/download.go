@@ -5,25 +5,29 @@ import (
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/utils"
+	"strconv"
 )
 
 func CurrentDownloader(IllustID interface{}) {
-	var (
-		size []int64
-		err  error
-	)
+	var err error
 	switch IllustID.(type) {
 	case string:
-		size, err = config.App.Download(config.INT(IllustID.(string)), "imageFile")
+		if config.FindImageFile(IllustID.(string)) {
+			fmt.Println(IllustID, "is exist, skip")
+		} else {
+			_, err = config.App.Download(config.INT(IllustID.(string)), "imageFile")
+		}
 	case int:
-		size, err = config.App.Download(IllustID.(int), "imageFile")
+		if config.FindImageFile(strconv.Itoa(IllustID.(int))) {
+			fmt.Println(IllustID, "is exist, skip")
+		} else {
+			_, err = config.App.Download(IllustID.(int), "imageFile")
+		}
 	default:
 		fmt.Println("you input is not a number,please check", IllustID)
 	}
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("download success,download size:", size)
+		fmt.Println("download fail", IllustID, err)
 	}
 }
 
