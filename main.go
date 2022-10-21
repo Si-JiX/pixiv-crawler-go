@@ -8,25 +8,20 @@ import (
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
+	"regexp"
 )
 
 var implement = func(c *cli.Context) error {
 	if config.CommandLines.IllustID != 0 {
-		siz, err := config.App.Download(uint64(config.CommandLines.IllustID), "imageFile")
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println("download success\tsize:", siz)
-		}
+		download.CurrentDownloader(config.CommandLines.IllustID)
 	} else if config.CommandLines.AuthorID != 0 {
 		download.GET_AUTHOR(uint64(config.CommandLines.AuthorID), 0)
-	} else if config.CommandLines.IllustID != 0 {
-		//FindID := regexp.MustCompile(`(\d+)`).FindAllString(config.CommandLines.URL, -1)
-		//if FindID != nil {
-		//	download.GET_IMAGE_INFO(FindID[0])
-		//} else {
-		//	fmt.Println("url error", config.CommandLines.URL)
-		//}
+	} else if config.CommandLines.URL != "" {
+		if FindID := regexp.MustCompile(`(\d+)`).FindAllString(config.CommandLines.URL, -1); FindID != nil {
+			download.CurrentDownloader(FindID[0])
+		} else {
+			fmt.Println("url error", config.CommandLines.URL)
+		}
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}
@@ -45,6 +40,7 @@ func init() {
 		log.Fatal(err)
 	}
 
+	fmt.Println(config.ShowFileList("imageFile"))
 }
 
 func ShellUserDetail() {

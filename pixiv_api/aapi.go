@@ -150,11 +150,11 @@ func (a *AppPixivAPI) IllustFollow(restrict string, offset int) ([]Illust, int, 
 }
 
 type illustDetailParams struct {
-	IllustID uint64 `url:"illust_id,omitemtpy"`
+	IllustID int `url:"illust_id,omitemtpy"`
 }
 
 // IllustDetail get a detailed illust with id
-func (a *AppPixivAPI) IllustDetail(id uint64) (*Illust, error) {
+func (a *AppPixivAPI) IllustDetail(id int) (*Illust, error) {
 	path := "v1/illust/detail"
 	data := &IllustResponse{}
 	params := &illustDetailParams{
@@ -167,7 +167,7 @@ func (a *AppPixivAPI) IllustDetail(id uint64) (*Illust, error) {
 }
 
 // Download a specific picture from pixiv id
-func (a *AppPixivAPI) Download(id uint64, path string) (sizes []int64, err error) {
+func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	illust, err := a.IllustDetail(id)
 	if err != nil {
 		err = errors.Wrapf(err, "illust %d detail error", id)

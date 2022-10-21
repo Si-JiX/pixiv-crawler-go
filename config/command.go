@@ -10,8 +10,9 @@ import (
 
 var CommandLines = struct {
 	IllustID int
-	Name     string
 	AuthorID int
+	Name     string
+	URL      string
 }{}
 
 var CommandLineFlag = []cli.Flag{
@@ -20,6 +21,12 @@ var CommandLineFlag = []cli.Flag{
 		Value:       0,
 		Usage:       "input IllustID to download",
 		Destination: &CommandLines.IllustID,
+	},
+	cli.StringFlag{
+		Name:        "u, url",
+		Value:       "",
+		Usage:       "input pixiv url to download",
+		Destination: &CommandLines.URL,
 	},
 	cli.StringFlag{
 		Name:        "n, name",
