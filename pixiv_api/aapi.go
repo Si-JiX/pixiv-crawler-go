@@ -281,11 +281,6 @@ type illustRecommendedParams struct {
 //
 // contentType: [illust, manga]
 func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*IllustRecommended, error) {
-	path := RECOMMENDED_NO_LOGIN
-	if requireAuth {
-		path = RECOMMENDED
-	}
-
 	data := &IllustRecommended{}
 	params := &illustRecommendedParams{
 		ContentType:                  contentType,
@@ -298,9 +293,14 @@ func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel 
 		MaxBookmarkIDForRecommended:  maxBookmarkIDForRecommended,
 		MinBookmarkIDForRecentIllust: minBookmarkIDForRecentIllust,
 	}
-
-	if err := a.request(path, params, data, true); err != nil {
-		return nil, err
+	if requireAuth {
+		if err := a.request(RECOMMENDED, params, data, true); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := a.request(RECOMMENDED_NO_LOGIN, params, data, true); err != nil {
+			return nil, err
+		}
 	}
 	return data, nil
 }
@@ -337,12 +337,11 @@ type trendingTagsIllustParams struct {
 
 // TrendingTagsIllust Trend label
 func (a *AppPixivAPI) TrendingTagsIllust(filter string) (*TrendingTagsIllust, error) {
-	path := "v1/trending-tags/illust"
 	data := &TrendingTagsIllust{}
 	params := &trendingTagsIllustParams{
 		Filter: filter,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(TRENDING_TAGS, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -455,14 +454,13 @@ type userFollowStatsParams struct {
 }
 
 func userFollowStats(a *AppPixivAPI, urlEnd string, userID uint64, restrict string, offset int) (*UserFollowList, error) {
-	path := "v1/user/" + urlEnd
 	data := &UserFollowList{}
 	params := &userFollowStatsParams{
 		UserID:   userID,
 		Restrict: restrict,
 		Offset:   offset,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(USER+urlEnd, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -508,13 +506,12 @@ type userMyPixivParams struct {
 
 // UserMyPixiv Users in MyPixiv
 func (a *AppPixivAPI) UserMyPixiv(userID uint64, offset int) (*UserFollowList, error) {
-	path := "/v1/user/mypixiv"
 	data := &UserFollowList{}
 	params := &userMyPixivParams{
 		UserID: userID,
 		Offset: offset,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(USER_MYPIXIV, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -528,14 +525,13 @@ type userListParams struct {
 
 // UserList Blacklisted users
 func (a *AppPixivAPI) UserList(userID uint64, filter string, offset int) (*UserList, error) {
-	path := "v2/user/list"
 	data := &UserList{}
 	params := &userListParams{
 		UserID: userID,
 		Filter: filter,
 		Offset: offset,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(USER_LIST, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -547,12 +543,11 @@ type ugoiraMetadataParams struct {
 
 // UgoiraMetadata Ugoira Info
 func (a *AppPixivAPI) UgoiraMetadata(illustID uint64) (*UgoiraMetadata, error) {
-	path := "v1/ugoira/metadata"
 	data := &UgoiraMetadata{}
 	params := &ugoiraMetadataParams{
 		IllustID: illustID,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(METADATA, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -564,19 +559,16 @@ type showcaseArticleParams struct {
 
 // ShowcaseArticle Special feature details (disguised as Chrome)
 func (a *AppPixivAPI) ShowcaseArticle(showcaseID string) (*ShowcaseArticle, error) {
-	base := "https://www.pixiv.net"
-	path := "ajax/showcase/article"
-
 	data := &ShowcaseArticle{}
 	params := &showcaseArticleParams{
 		ShowcaseID: showcaseID,
 	}
 
-	s := a.sling.New().Base(base + "/")
+	s := a.sling.New().Base(WEB_BASE + "/")
 	s.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
-	s.Set("Referer", base)
+	s.Set("Referer", WEB_BASE)
 
-	if _, err := s.Get(path).QueryStruct(params).ReceiveSuccess(data); err != nil {
+	if _, err := s.Get(WEB_ARTICLE).QueryStruct(params).ReceiveSuccess(data); err != nil {
 		return nil, err
 	}
 	return data, nil
