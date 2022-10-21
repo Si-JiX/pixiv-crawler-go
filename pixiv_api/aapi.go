@@ -390,12 +390,11 @@ type illustBookmarkDetailParams struct {
 
 // IllustBookmarkDetail Bookmark details
 func (a *AppPixivAPI) IllustBookmarkDetail(illustID uint64) (*IllustBookmarkDetail, error) {
-	path := "v2/illust/bookmark/detail"
 	data := &IllustBookmarkDetail{}
 	params := &illustBookmarkDetailParams{
 		IllustID: illustID,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(BOOKMARK_DETAIL, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -438,13 +437,12 @@ type userBookmarkTagsIllustParams struct {
 
 // UserBookmarkTagsIllust User favorite tag list
 func (a *AppPixivAPI) UserBookmarkTagsIllust(restrict string, offset int) (*UserBookmarkTags, error) {
-	path := "v1/user/bookmark-tags/illust"
 	data := &UserBookmarkTags{}
 	params := &userBookmarkTagsIllustParams{
 		Restrict: restrict,
 		Offset:   offset,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(BOOKMARK_TAG, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -486,12 +484,11 @@ type userFollowPostParams struct {
 }
 
 func userFollowPost(a *AppPixivAPI, urlEnd string, userID uint64, restrict string) error {
-	path := "v1/user/follow/" + urlEnd
 	params := userFollowPostParams{
 		UserID:   userID,
 		Restrict: restrict,
 	}
-	return a.post(path, params, nil, true)
+	return a.post(USER_FOLLOW+urlEnd, params, nil, true)
 }
 
 // UserFollowAdd Follow users
