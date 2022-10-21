@@ -17,3 +17,8 @@ func IsExist(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil
 }
+func NewFile(filePath string) {
+	if !IsExist(filePath) {
+		_ = os.Mkdir(filePath, 0777)
+	}
+}

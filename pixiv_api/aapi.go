@@ -11,9 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	apiBase = "https://app-api.pixiv.net/"
-)
+const apiBase = "https://app-api.pixiv.net/"
 
 // AppPixivAPI -- App-API (6.x - app-api.pixiv.net)
 type AppPixivAPI struct {

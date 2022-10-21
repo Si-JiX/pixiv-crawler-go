@@ -12,7 +12,12 @@ import (
 
 var implement = func(c *cli.Context) error {
 	if config.CommandLines.IllustID != 0 {
-		_, _ = config.App.Download(uint64(config.CommandLines.IllustID), "imageFile")
+		siz, err := config.App.Download(uint64(config.CommandLines.IllustID), "imageFile")
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("download success\tsize:", siz)
+		}
 	} else if config.CommandLines.AuthorID != 0 {
 		download.GET_AUTHOR(uint64(config.CommandLines.AuthorID), 0)
 	} else if config.CommandLines.IllustID != 0 {
@@ -29,6 +34,7 @@ var implement = func(c *cli.Context) error {
 }
 
 func init() {
+	config.INIT_PIXIV_AUTH() // init pixiv auth
 	cli_app := cli.NewApp()
 	cli_app.Name = "image downloader"
 	cli_app.Version = "V.1.0.9"
@@ -37,8 +43,6 @@ func init() {
 	cli_app.Action = implement
 	if err := cli_app.Run(os.Args); err != nil {
 		log.Fatal(err)
-	} else {
-		config.INIT_PIXIV_AUTH()
 	}
 
 }
@@ -63,9 +67,7 @@ func ShellUserDetail() {
 }
 
 func main() {
-	//if !config.IsExist("imageFile") {
-	//	_ = os.Mkdir("imageFile", 0777)
-	//}
+	config.NewFile("imageFile")
 	//init_command()
 	//for i, illust := range config.ImageList {
 	//	fmt.Println(i, illust.Title)
