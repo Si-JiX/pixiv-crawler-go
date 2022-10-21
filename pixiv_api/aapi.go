@@ -187,7 +187,7 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	}
 
 	for _, u := range urls {
-		size, e := download(dclient, u, path, filepath.Base(u), false)
+		size, e := download(dclient, u, path, filepath.Base(u))
 		if e != nil {
 			err = errors.Wrapf(e, "download url %s failed", u)
 			return

@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -111,12 +112,12 @@ func auth(params *authParams) (*authInfo, error) {
 
 // HookAuth add a hook with (token, refreshToken, tokenDeadline) after a successful auth.
 // Prividing a way to store the latest token.
-func HookAuth(f func(string, string, time.Time) error) {
+func _(f func(string, string, time.Time) error) {
 	authHook = f
 }
 
 // Login pixiv has deprecated login api, so this function is useless
-func Login(username, password string) (*Account, error) {
+func _(username, password string) (*Account, error) {
 	params := &authParams{
 		GetSecureURL: 1,
 		ClientID:     utils.ClientID,
@@ -161,7 +162,7 @@ func refreshAuth() (*Account, error) {
 }
 
 // download image to file (use 6.0 app-api)
-func download(client *http.Client, url, path, name string, replace bool) (int64, error) {
+func download(client *http.Client, url, path, name string) (int64, error) {
 	if path == "" {
 		return 0, fmt.Errorf("download path needed")
 	}
@@ -178,7 +179,12 @@ func download(client *http.Client, url, path, name string, replace bool) (int64,
 	if err != nil {
 		return 0, err
 	}
-	defer output.Close()
+	defer func(output *os.File) {
+		err = output.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(output)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -189,7 +195,12 @@ func download(client *http.Client, url, path, name string, replace bool) (int64,
 	if err != nil {
 		return 0, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return 0, fmt.Errorf("download failed: %s", resp.Status)
