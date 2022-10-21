@@ -321,7 +321,6 @@ type illustRankingParams struct {
 //
 // date: yyyy-mm-dd
 func (a *AppPixivAPI) IllustRanking(mode string, filter string, date string, offset string) (*IllustsResponse, error) {
-	path := "v1/illust/ranking"
 	data := &IllustsResponse{}
 	params := &illustRankingParams{
 		Mode:   mode,
@@ -329,7 +328,7 @@ func (a *AppPixivAPI) IllustRanking(mode string, filter string, date string, off
 		Offset: offset,
 		Date:   date,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(RANKING, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -373,7 +372,6 @@ type searchIllustParams struct {
 //
 // duration: [within_last_day, within_last_week, within_last_month]
 func (a *AppPixivAPI) SearchIllust(word string, searchTarget string, sort string, duration string, filter string, offset int) (*SearchIllustResult, error) {
-	path := "v1/search/illust"
 	data := &SearchIllustResult{}
 	params := &searchIllustParams{
 		Word:         word,
@@ -383,7 +381,7 @@ func (a *AppPixivAPI) SearchIllust(word string, searchTarget string, sort string
 		Duration:     duration,
 		Offset:       offset,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(SEARCH, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
