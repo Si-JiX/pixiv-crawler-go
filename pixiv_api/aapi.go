@@ -142,12 +142,11 @@ type illustDetailParams struct {
 
 // IllustDetail get a detailed illust with id
 func (a *AppPixivAPI) IllustDetail(id int) (*Illust, error) {
-	path := "v1/illust/detail"
 	data := &IllustResponse{}
 	params := &illustDetailParams{
 		IllustID: id,
 	}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(DETAIL, params, data, true); err != nil {
 		return nil, err
 	}
 	return &data.Illust, nil
@@ -229,14 +228,13 @@ type illustCommentAddParams struct {
 
 // IllustCommentAdd adds a comment to given illustID
 func (a *AppPixivAPI) IllustCommentAdd(illustID uint64, comment string, parentCommentID int) (*IllustCommentAddResult, error) {
-	path := "v1/illust/comment/add"
 	data := &IllustCommentAddResult{}
 	params := &illustCommentAddParams{
 		IllustID:        illustID,
 		Comment:         comment,
 		ParentCommentID: parentCommentID,
 	}
-	if err := a.post(path, params, data, true); err != nil {
+	if err := a.post(ADD, params, data, true); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -412,7 +410,6 @@ type illustBookmarkAddParams struct {
 
 // IllustBookmarkAdd Add bookmark
 func (a *AppPixivAPI) IllustBookmarkAdd(illustID uint64, restrict string, tags []string) error {
-	path := "v2/illust/bookmark/add"
 	params := illustBookmarkAddParams{
 		IllustID: illustID,
 		Restrict: restrict,
@@ -420,7 +417,7 @@ func (a *AppPixivAPI) IllustBookmarkAdd(illustID uint64, restrict string, tags [
 	if tags != nil {
 		params.Tags = tags
 	}
-	return a.post(path, params, nil, true)
+	return a.post(BOOKMARK_ADD, params, nil, true)
 }
 
 type illustBookmarkDeleteParams struct {
@@ -429,11 +426,10 @@ type illustBookmarkDeleteParams struct {
 
 // IllustBookmarkDelete Remove bookmark
 func (a *AppPixivAPI) IllustBookmarkDelete(illustID uint64) error {
-	path := "v1/illust/bookmark/delete"
 	params := &illustBookmarkDeleteParams{
 		IllustID: illustID,
 	}
-	return a.post(path, params, nil, true)
+	return a.post(BOOKMARK_DELETE, params, nil, true)
 }
 
 type userBookmarkTagsIllustParams struct {
