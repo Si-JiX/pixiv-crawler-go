@@ -8,21 +8,20 @@ import (
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
-	pixiv "pixiv-cil/pixiv_api"
-	"regexp"
-	"strings"
 )
 
 var implement = func(c *cli.Context) error {
-	if config.CommandLines.URL != "" {
-		FindID := regexp.MustCompile(`(\d+)`).FindAllString(config.CommandLines.URL, -1)
-		if FindID != nil {
-			download.GET_IMAGE_INFO(FindID[0])
-		} else {
-			fmt.Println("url error", config.CommandLines.URL)
-		}
+	if config.CommandLines.IllustID != 0 {
+		_, _ = config.App.Download(uint64(config.CommandLines.IllustID), "imageFile")
 	} else if config.CommandLines.AuthorID != 0 {
 		download.GET_AUTHOR(uint64(config.CommandLines.AuthorID), 0)
+	} else if config.CommandLines.IllustID != 0 {
+		//FindID := regexp.MustCompile(`(\d+)`).FindAllString(config.CommandLines.URL, -1)
+		//if FindID != nil {
+		//	download.GET_IMAGE_INFO(FindID[0])
+		//} else {
+		//	fmt.Println("url error", config.CommandLines.URL)
+		//}
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}
@@ -32,29 +31,14 @@ var implement = func(c *cli.Context) error {
 func init() {
 	cli_app := cli.NewApp()
 	cli_app.Name = "image downloader"
-	cli_app.Version = "V.1.0.1"
-	cli_app.Usage = ""
+	cli_app.Version = "V.1.0.9"
+	cli_app.Usage = "download image from pixiv "
 	cli_app.Flags = config.CommandLineFlag
 	cli_app.Action = implement
 	if err := cli_app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	} else {
-		config.App = pixiv.NewApp()
-	}
-	f, err := os.ReadFile("author_key.txt")
-	if err == nil {
-		config.PIXAPI_TOKEN_KEY = strings.Split(string(f), "\n")[0]
-		config.PIXAPI_RE_TOKEN_KEY = strings.Split(string(f), "\n")[1]
-		fmt.Println(config.PIXAPI_TOKEN_KEY)
-		fmt.Println(config.PIXAPI_RE_TOKEN_KEY)
-		account, ok := pixiv.LoadAuth(config.PIXAPI_TOKEN_KEY, config.PIXAPI_RE_TOKEN_KEY, config.PIXAPI_TOKEN_TIME_KEY)
-		if ok != nil {
-			fmt.Println(ok)
-		} else {
-			fmt.Println("account:", account.Account)
-		}
-	} else {
-		panic(err)
+		config.INIT_PIXIV_AUTH()
 	}
 
 }

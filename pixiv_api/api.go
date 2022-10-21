@@ -77,8 +77,8 @@ type Perror struct {
 
 func genClientHash(clientTime string) string {
 	h := md5.New()
-	io.WriteString(h, clientTime)
-	io.WriteString(h, clientHashSecret)
+	_, _ = io.WriteString(h, clientTime)
+	_, _ = io.WriteString(h, clientHashSecret)
 	return hex.EncodeToString(h.Sum(nil))
 }
 
@@ -120,6 +120,7 @@ func HookAuth(f func(string, string, time.Time) error) {
 	authHook = f
 }
 
+// Login pixiv has deprecated login api, so this function is useless
 func Login(username, password string) (*Account, error) {
 	params := &authParams{
 		GetSecureURL: 1,
