@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"pixiv-cil/config"
 	"time"
 
 	"github.com/dghubble/sling"
 	"github.com/pkg/errors"
 )
-
-const apiBase = "https://app-api.pixiv.net/"
 
 // AppPixivAPI -- App-API (6.x - app-api.pixiv.net)
 type AppPixivAPI struct {
@@ -21,7 +20,7 @@ type AppPixivAPI struct {
 }
 
 func NewApp() *AppPixivAPI {
-	s := sling.New().Base(apiBase).Set("User-Agent", "PixivIOSApp/7.6.2 (iOS 12.2; iPhone9,1)").Set("App-Version", "7.6.2").Set("App-OS-VERSION", "12.2").Set("App-OS", "ios")
+	s := sling.New().Base(config.ApiBase).Set("User-Agent", "PixivIOSApp/7.6.2 (iOS 12.2; iPhone9,1)").Set("App-Version", "7.6.2").Set("App-OS-VERSION", "12.2").Set("App-OS", "ios")
 	return &AppPixivAPI{sling: s}
 }
 

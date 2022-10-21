@@ -8,15 +8,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"pixiv-cil/config"
 	"time"
 
 	"github.com/dghubble/sling"
-)
-
-const (
-	clientID         = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
-	clientSecret     = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
-	clientHashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 )
 
 var (
@@ -78,7 +73,7 @@ type Perror struct {
 func genClientHash(clientTime string) string {
 	h := md5.New()
 	_, _ = io.WriteString(h, clientTime)
-	_, _ = io.WriteString(h, clientHashSecret)
+	_, _ = io.WriteString(h, config.ClientHashSecret)
 	return hex.EncodeToString(h.Sum(nil))
 }
 
@@ -124,8 +119,8 @@ func HookAuth(f func(string, string, time.Time) error) {
 func Login(username, password string) (*Account, error) {
 	params := &authParams{
 		GetSecureURL: 1,
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:     config.ClientID,
+		ClientSecret: config.ClientSecret,
 		GrantType:    "password",
 		Username:     username,
 		Password:     password,
@@ -153,8 +148,8 @@ func refreshAuth() (*Account, error) {
 	}
 	params := &authParams{
 		GetSecureURL: 1,
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:     config.ClientID,
+		ClientSecret: config.ClientSecret,
 		GrantType:    "refresh_token",
 		RefreshToken: _refreshToken,
 	}
@@ -189,7 +184,7 @@ func download(client *http.Client, url, path, name string, replace bool) (int64,
 	if err != nil {
 		return 0, err
 	}
-	req.Header.Add("Referer", apiBase)
+	req.Header.Add("Referer", config.ApiBase)
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, err
