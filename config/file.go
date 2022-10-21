@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// shoe file name list
+// ShowFileList  show file list
 func ShowFileList(path string) []string {
 	var FileNameArray []string
 	files, _ := os.ReadDir(path)
