@@ -2,9 +2,7 @@ package download
 
 import (
 	"fmt"
-	"os"
 	"pixiv-cil/config"
-	"pixiv-cil/utils"
 	"strconv"
 )
 
@@ -31,15 +29,15 @@ func CurrentDownloader(IllustID interface{}) {
 	}
 }
 
-func ImageDownloader(ImageURL, ImageName string) {
-	if config.IsExist("./imageFile/" + ImageName + ".jpg") {
-		fmt.Printf("file:%v exist\r", ImageName)
-	} else {
-		if image, _ := utils.Request(ImageURL); image != nil {
-			fmt.Println(ImageName, "download success")
-			_ = os.WriteFile("imageFile"+"/"+ImageName+".jpg", image, 0666)
-		} else {
-			fmt.Println("image download fail")
-		}
+func GET_AUTHOR(author_id uint64, page int) {
+	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
+	for _, Illust := range illusts {
+		config.ImageList = append(config.ImageList, Illust)
 	}
+	if err == nil && next != 0 {
+		GET_AUTHOR(author_id, next)
+	} else {
+		fmt.Println("一共", len(config.ImageList), "张图片")
+	}
+
 }
