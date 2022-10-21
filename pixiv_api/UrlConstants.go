@@ -1,5 +1,6 @@
 package pixiv
 
+const API_BASE = "https://app-api.pixiv.net/"
 const USER_DETAIL = "v1/user/detail"
 const USER_AUTHOR = "v1/user/illusts"
 const BOOKMARKS = "v1/user/bookmarks/illust"

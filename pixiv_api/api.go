@@ -184,7 +184,7 @@ func download(client *http.Client, url, path, name string, replace bool) (int64,
 	if err != nil {
 		return 0, err
 	}
-	req.Header.Add("Referer", utils.ApiBase)
+	req.Header.Add("Referer", API_BASE)
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, err

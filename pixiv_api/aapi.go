@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
-	"pixiv-cil/utils"
 	"time"
 
 	"github.com/dghubble/sling"
@@ -20,7 +19,7 @@ type AppPixivAPI struct {
 }
 
 func NewApp() *AppPixivAPI {
-	s := sling.New().Base(utils.ApiBase).Set("User-Agent", "PixivIOSApp/7.6.2 (iOS 12.2; iPhone9,1)").Set("App-Version", "7.6.2").Set("App-OS-VERSION", "12.2").Set("App-OS", "ios")
+	s := sling.New().Base(API_BASE).Set("User-Agent", "PixivIOSApp/7.6.2 (iOS 12.2; iPhone9,1)").Set("App-Version", "7.6.2").Set("App-OS-VERSION", "12.2").Set("App-OS", "ios")
 	return &AppPixivAPI{sling: s}
 }
 
