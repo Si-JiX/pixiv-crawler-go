@@ -64,7 +64,6 @@ type userDetailParams struct {
 }
 
 func (a *AppPixivAPI) UserDetail(uid uint64) (*UserDetail, error) {
-	path := "v1/user/detail"
 	params := &userDetailParams{
 		UserID: uid,
 		Filter: "for_ios",
@@ -72,22 +71,21 @@ func (a *AppPixivAPI) UserDetail(uid uint64) (*UserDetail, error) {
 	detail := &UserDetail{
 		User: &User{},
 	}
-	if err := a.request(path, params, detail, true); err != nil {
+	if err := a.request(DETAIL, params, detail, true); err != nil {
 		return nil, err
 	}
 	return detail, nil
 }
 
 type userIllustsParams struct {
-	UserID uint64 `url:"user_id,omitempty"`
+	UserID int    `url:"user_id,omitempty"`
 	Filter string `url:"filter,omitempty"`
 	Type   string `url:"type,omitempty"`
 	Offset int    `url:"offset,omitempty"`
 }
 
 // UserIllusts type: [illust, manga]
-func (a *AppPixivAPI) UserIllusts(uid uint64, _type string, offset int) ([]Illust, int, error) {
-	path := "v1/user/illusts"
+func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]Illust, int, error) {
 	params := &userIllustsParams{
 		UserID: uid,
 		Filter: "for_ios",
@@ -95,7 +93,7 @@ func (a *AppPixivAPI) UserIllusts(uid uint64, _type string, offset int) ([]Illus
 		Offset: offset,
 	}
 	data := &IllustsResponse{}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(AUTHOR, params, data, true); err != nil {
 		return nil, 0, err
 	}
 	next, err := parseNextPageOffset(data.NextURL)
@@ -112,7 +110,6 @@ type userBookmarkIllustsParams struct {
 
 // UserBookmarksIllust restrict: [public, private]
 func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag string) ([]Illust, int, error) {
-	path := "v1/user/bookmarks/illust"
 	params := &userBookmarkIllustsParams{
 		UserID:        uid,
 		Restrict:      "public",
@@ -121,7 +118,7 @@ func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag str
 		Tag:           tag,
 	}
 	data := &IllustsResponse{}
-	if err := a.request(path, params, data, true); err != nil {
+	if err := a.request(BOOKMARKS, params, data, true); err != nil {
 		return nil, 0, err
 	}
 	next, err := parseNextPageOffset(data.NextURL)
