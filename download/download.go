@@ -3,7 +3,9 @@ package download
 import (
 	"fmt"
 	"pixiv-cil/config"
+	"pixiv-cil/utils"
 	"strconv"
+	"sync"
 )
 
 func CurrentDownloader(IllustID interface{}) {
@@ -29,17 +31,40 @@ func CurrentDownloader(IllustID interface{}) {
 	}
 }
 
-var ImageList [][]string
+var tmpChan = make(chan struct{}, utils.CHANNEL_CACHE)
+var waitGroup sync.WaitGroup
 
-func GET_AUTHOR(author_id int, page int) [][]string {
+func AuthorImageALL(author_id int) {
+	GET_AUTHOR_INFO(author_id, 0) // Get all the images of the author and put them in the ImageUrlList
+	utils.CurrentImageLength = len(config.ImageUrlList)
+	if utils.CurrentImageLength != 0 {
+		fmt.Println("一共", utils.CurrentImageLength, "张图片,开始下载中...")
+		for _, url := range config.ImageUrlList {
+			waitGroup.Add(1)
+			go config.App.ThreadDownloadImage(url, tmpChan, &waitGroup)
+		}
+		waitGroup.Wait()
+		config.ImageUrlList = nil
+		utils.CurrentImageLength = 0
+		utils.CurrentImageIndex = 0
+	} else {
+		fmt.Println("Request author info fail,please check author_id or network")
+	}
+}
+
+func GET_AUTHOR_INFO(author_id int, page int) {
 	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
 	for _, Illust := range illusts {
-		ImageList = append(ImageList, []string{strconv.FormatUint(Illust.ID, 10), Illust.Title, Illust.Images.Original})
+		// Test if the image is a manga or not
+		if Illust.MetaSinglePage.OriginalImageURL == "" {
+			for _, img := range Illust.MetaPages {
+				config.ImageUrlList = append(config.ImageUrlList, img.Images.Original)
+			}
+		} else {
+			config.ImageUrlList = append(config.ImageUrlList, Illust.MetaSinglePage.OriginalImageURL)
+		}
 	}
 	if err == nil && next != 0 {
-		GET_AUTHOR(author_id, next)
-	} else {
-		fmt.Println("一共", len(ImageList), "张图片")
+		GET_AUTHOR_INFO(author_id, next)
 	}
-	return ImageList
 }

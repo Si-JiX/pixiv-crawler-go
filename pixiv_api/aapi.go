@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"pixiv-cil/utils"
+	"sync"
 	"time"
 
 	"github.com/dghubble/sling"
@@ -196,6 +198,28 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	}
 
 	return
+}
+
+func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string, tmpChan chan struct{}, WaitGroup *sync.WaitGroup) {
+	defer WaitGroup.Done()
+	utils.CurrentImageIndex += 1
+	tmpChan <- struct{}{}
+	dclient := &http.Client{}
+	if a.proxy != nil {
+		dclient.Transport = &http.Transport{
+			Proxy: http.ProxyURL(a.proxy),
+		}
+	}
+	if a.timeout != 0 {
+		dclient.Timeout = a.timeout
+	}
+	_, e := download(dclient, IllustImageUrl, "imageFile", filepath.Base(IllustImageUrl))
+	<-tmpChan
+	if e != nil {
+		fmt.Println(errors.Wrapf(e, "download url %s failed", IllustImageUrl))
+	}
+	fmt.Printf("download image:%d/%d\r", utils.CurrentImageIndex, utils.CurrentImageLength)
+
 }
 
 type illustCommentsParams struct {
@@ -544,9 +568,7 @@ type ugoiraMetadataParams struct {
 // UgoiraMetadata Ugoira Info
 func (a *AppPixivAPI) UgoiraMetadata(illustID uint64) (*UgoiraMetadata, error) {
 	data := &UgoiraMetadata{}
-	params := &ugoiraMetadataParams{
-		IllustID: illustID,
-	}
+	params := &ugoiraMetadataParams{IllustID: illustID}
 	if err := a.request(METADATA, params, data, true); err != nil {
 		return nil, err
 	}

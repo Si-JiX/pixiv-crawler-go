@@ -4,10 +4,14 @@ import (
 	"time"
 )
 
+var CurrentImageIndex int
+var CurrentImageLength int
+
 var PIXAPI_TOKEN_KEY = ""
 var PIXAPI_RE_TOKEN_KEY = ""
 var PIXAPI_TOKEN_TIME_KEY = time.Now()
 
+const CHANNEL_CACHE = 20
 const IntSize = 32 << (^uint(0) >> 63)
 const ClientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
 const ClientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"

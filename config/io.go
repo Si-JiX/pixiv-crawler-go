@@ -43,9 +43,7 @@ func INT(s string) int {
 			n = -n
 		}
 		return n
-	}
-
-	// Slow path for invalid, big, or underscored integers.
+	} // Slow path for invalid, big, or underscored integers.
 	i64, _ := strconv.ParseInt(s, 10, 0)
 	return int(i64)
 }
