@@ -64,6 +64,7 @@ func GET_AUTHOR_INFO(author_id int, page int) {
 			config.ImageUrlList = append(config.ImageUrlList, Illust.MetaSinglePage.OriginalImageURL)
 		}
 	}
+	// If there is a next page, continue to request
 	if err == nil && next != 0 {
 		GET_AUTHOR_INFO(author_id, next)
 	}
