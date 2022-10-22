@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func Open(file_path string, mode string) string {
+func Open(file_path string, mode string) []byte {
 	if mode == "r" {
 		return ReadFile(file_path)
 	} else if mode == "w" {
@@ -13,16 +13,16 @@ func Open(file_path string, mode string) string {
 	} else if mode == "a" {
 		WriteFile(file_path, "", 0666)
 	}
-	return ""
+	return nil
 }
 
-func ReadFile(file_path string) string {
+func ReadFile(file_path string) []byte {
 	if f, ok := os.ReadFile(file_path); ok == nil {
-		return string(f)
+		return f
 	} else {
 		fmt.Println("read file error:", ok)
 	}
-	return ""
+	return nil
 }
 func WriteFile(file_path string, data string, perm os.FileMode) {
 	if ok := os.WriteFile(file_path, []byte(data), perm); ok != nil {
