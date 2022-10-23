@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
 )
 
 // ShowFileList  show file list
@@ -18,16 +17,6 @@ func ShowFileList(path string) []string {
 	} else {
 		return FileNameArray
 	}
-}
-
-// FindImageFile Find local image file
-func FindImageFile(name string) bool {
-	for _, file := range ShowFileList("./imageFile") {
-		if strings.Contains(file, name) {
-			return true
-		}
-	}
-	return false
 }
 
 // PrintMap 美化打印map数据

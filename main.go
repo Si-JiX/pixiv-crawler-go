@@ -19,7 +19,7 @@ var implement = func(c *cli.Context) error {
 	} else if config.CommandLines.AuthorID != 0 {
 		download.AuthorImageALL(config.CommandLines.AuthorID)
 	} else if config.CommandLines.URL != "" {
-		download.CurrentDownloader(utils.FindInt(config.CommandLines.URL))
+		download.CurrentDownloader(utils.GetInt(config.CommandLines.URL))
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}

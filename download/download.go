@@ -12,13 +12,13 @@ func CurrentDownloader(IllustID interface{}) {
 	var err error
 	switch IllustID.(type) {
 	case string:
-		if config.FindImageFile(IllustID.(string)) {
+		if utils.ListFind(config.ShowFileList("./imageFile"), IllustID.(string)) {
 			fmt.Println(IllustID, "is exist, skip")
 		} else {
 			_, err = config.App.Download(utils.INT(IllustID.(string)), "imageFile")
 		}
 	case int:
-		if config.FindImageFile(strconv.Itoa(IllustID.(int))) {
+		if utils.ListFind(config.ShowFileList("./imageFile"), strconv.Itoa(IllustID.(int))) {
 			fmt.Println(IllustID, "is exist, skip")
 		} else {
 			_, err = config.App.Download(IllustID.(int), "imageFile")
