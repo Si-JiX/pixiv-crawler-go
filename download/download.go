@@ -8,25 +8,21 @@ import (
 )
 
 func CurrentDownloader(IllustID interface{}) {
-	var err error
+	var illust_id int
 	switch IllustID.(type) {
 	case string:
-		if utils.ListFind(config.ShowFileList("./imageFile"), IllustID.(string)) {
-			fmt.Println(IllustID, "is exist, skip")
-		} else {
-			_, err = config.App.Download(utils.INT(IllustID.(string)), "imageFile")
-		}
+		illust_id = utils.INT(IllustID.(string))
 	case int:
-		if utils.ListFind(config.ShowFileList("./imageFile"), strconv.Itoa(IllustID.(int))) {
-			fmt.Println(IllustID, "is exist, skip")
-		} else {
-			_, err = config.App.Download(IllustID.(int), "imageFile")
-		}
+		illust_id = IllustID.(int)
 	default:
 		fmt.Println("you input is not a number,please check", IllustID)
 	}
-	if err != nil {
-		fmt.Println("download fail", IllustID, err)
+	if utils.ListFind(config.ShowFileList("./imageFile"), strconv.Itoa(illust_id)) {
+		fmt.Println(IllustID, "is exist, skip")
+	} else {
+		if _, err := config.App.Download(illust_id, "imageFile"); err != nil {
+			fmt.Println("download fail", IllustID, err)
+		}
 	}
 }
 
@@ -40,7 +36,7 @@ func AuthorImageALL(author_id int) {
 			go config.App.ThreadDownloadImage(url)
 		}
 		utils.ImageUrlList = nil
-		utils.WG.Wait()
+		utils.WG.Wait() // Wait for all threads to finish
 		utils.CurrentImageLength = 0
 		utils.CurrentImageIndex = 0
 	} else {
