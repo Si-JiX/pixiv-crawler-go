@@ -1,15 +1,14 @@
-package config
+package utils
 
 import (
-	"pixiv-cil/utils"
 	"strconv"
 )
 
 // INT string converted to type int.
 func INT(s string) int {
 	sLen := len(s)
-	if utils.IntSize == 32 && (0 < sLen && sLen < 10) ||
-		utils.IntSize == 64 && (0 < sLen && sLen < 19) {
+	if IntSize == 32 && (0 < sLen && sLen < 10) ||
+		IntSize == 64 && (0 < sLen && sLen < 19) {
 		// Fast path for small integers that fit int type.
 		s0 := s
 		if s[0] == '-' || s[0] == '+' {

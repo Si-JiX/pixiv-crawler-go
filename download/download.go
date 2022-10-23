@@ -15,7 +15,7 @@ func CurrentDownloader(IllustID interface{}) {
 		if config.FindImageFile(IllustID.(string)) {
 			fmt.Println(IllustID, "is exist, skip")
 		} else {
-			_, err = config.App.Download(config.INT(IllustID.(string)), "imageFile")
+			_, err = config.App.Download(utils.INT(IllustID.(string)), "imageFile")
 		}
 	case int:
 		if config.FindImageFile(strconv.Itoa(IllustID.(int))) {

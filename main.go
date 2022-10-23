@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
-	"regexp"
+	"pixiv-cil/utils"
 )
 
 func init() {
@@ -20,11 +19,7 @@ var implement = func(c *cli.Context) error {
 	} else if config.CommandLines.AuthorID != 0 {
 		download.AuthorImageALL(config.CommandLines.AuthorID)
 	} else if config.CommandLines.URL != "" {
-		if FindID := regexp.MustCompile(`(\d+)`).FindAllString(config.CommandLines.URL, -1); FindID != nil {
-			download.CurrentDownloader(FindID[0])
-		} else {
-			fmt.Println("url error", config.CommandLines.URL)
-		}
+		download.CurrentDownloader(utils.FindInt(config.CommandLines.URL))
 	} else {
 		_ = cli.ShowAppHelp(c)
 	}
