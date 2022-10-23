@@ -3,7 +3,6 @@ package utils
 import "sync"
 
 var CurrentImageIndex int
-var CurrentImageLength int
 
 var ImageUrlList []string
 var CH = make(chan struct{}, CHANNEL_CACHE)

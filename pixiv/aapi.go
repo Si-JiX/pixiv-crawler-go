@@ -199,7 +199,7 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	return
 }
 
-func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string) {
+func (a *AppPixivAPI) ThreadDownloadImage(url string, Length int) {
 	defer utils.WG.Done()
 	utils.CurrentImageIndex += 1
 	utils.CH <- struct{}{}
@@ -212,12 +212,12 @@ func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string) {
 	if a.timeout != 0 {
 		dclient.Timeout = a.timeout
 	}
-	_, e := download(dclient, IllustImageUrl, "imageFile", filepath.Base(IllustImageUrl))
+	_, e := download(dclient, url, "imageFile", filepath.Base(url))
 	<-utils.CH
 	if e != nil {
-		fmt.Println(errors.Wrapf(e, "download url %s failed", IllustImageUrl))
+		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}
-	fmt.Printf("download image:%d/%d\r", utils.CurrentImageIndex, utils.CurrentImageLength)
+	defer fmt.Printf("download image:%d/%d\r", utils.CurrentImageIndex, Length)
 
 }
 
