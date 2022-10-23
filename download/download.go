@@ -5,7 +5,6 @@ import (
 	"pixiv-cil/config"
 	"pixiv-cil/utils"
 	"strconv"
-	"sync"
 )
 
 func CurrentDownloader(IllustID interface{}) {
@@ -31,20 +30,17 @@ func CurrentDownloader(IllustID interface{}) {
 	}
 }
 
-var tmpChan = make(chan struct{}, utils.CHANNEL_CACHE)
-var waitGroup sync.WaitGroup
-
 func AuthorImageALL(author_id int) {
 	GET_AUTHOR_INFO(author_id, 0) // Get all the images of the author and put them in the ImageUrlList
-	utils.CurrentImageLength = len(config.ImageUrlList)
+	utils.CurrentImageLength = len(utils.ImageUrlList)
 	if utils.CurrentImageLength != 0 {
 		fmt.Println("一共", utils.CurrentImageLength, "张图片,开始下载中...")
-		for _, url := range config.ImageUrlList {
-			waitGroup.Add(1)
-			go config.App.ThreadDownloadImage(url, tmpChan, &waitGroup)
+		for _, url := range utils.ImageUrlList {
+			utils.WG.Add(1)
+			go config.App.ThreadDownloadImage(url)
 		}
-		waitGroup.Wait()
-		config.ImageUrlList = nil
+		utils.ImageUrlList = nil
+		utils.WG.Wait()
 		utils.CurrentImageLength = 0
 		utils.CurrentImageIndex = 0
 	} else {
@@ -58,10 +54,10 @@ func GET_AUTHOR_INFO(author_id int, page int) {
 		// Test if the image is a manga or not
 		if Illust.MetaSinglePage.OriginalImageURL == "" {
 			for _, img := range Illust.MetaPages {
-				config.ImageUrlList = append(config.ImageUrlList, img.Images.Original)
+				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
 			}
 		} else {
-			config.ImageUrlList = append(config.ImageUrlList, Illust.MetaSinglePage.OriginalImageURL)
+			utils.ImageUrlList = append(utils.ImageUrlList, Illust.MetaSinglePage.OriginalImageURL)
 		}
 	}
 	// If there is a next page, continue to request

@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"path/filepath"
 	"pixiv-cil/utils"
-	"sync"
 	"time"
 
 	"github.com/dghubble/sling"
@@ -200,10 +199,10 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	return
 }
 
-func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string, tmpChan chan struct{}, WaitGroup *sync.WaitGroup) {
-	defer WaitGroup.Done()
+func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string) {
+	defer utils.WG.Done()
 	utils.CurrentImageIndex += 1
-	tmpChan <- struct{}{}
+	utils.CH <- struct{}{}
 	dclient := &http.Client{}
 	if a.proxy != nil {
 		dclient.Transport = &http.Transport{
@@ -214,7 +213,7 @@ func (a *AppPixivAPI) ThreadDownloadImage(IllustImageUrl string, tmpChan chan st
 		dclient.Timeout = a.timeout
 	}
 	_, e := download(dclient, IllustImageUrl, "imageFile", filepath.Base(IllustImageUrl))
-	<-tmpChan
+	<-utils.CH
 	if e != nil {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", IllustImageUrl))
 	}

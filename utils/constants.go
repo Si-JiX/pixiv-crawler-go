@@ -1,7 +1,13 @@
 package utils
 
+import "sync"
+
 var CurrentImageIndex int
 var CurrentImageLength int
+
+var ImageUrlList []string
+var CH = make(chan struct{}, CHANNEL_CACHE)
+var WG sync.WaitGroup
 
 const IntSize = 32 << (^uint(0) >> 63)
 const CHANNEL_CACHE = 20

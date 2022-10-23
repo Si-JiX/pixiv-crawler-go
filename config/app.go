@@ -9,8 +9,6 @@ import (
 
 var App *pixiv.AppPixivAPI
 
-var ImageUrlList []string
-
 func INIT_PIXIV_AUTH() *pixiv.AppPixivAPI {
 	var PIXAPI_TOKEN_KEY = ""
 	var PIXAPI_RE_TOKEN_KEY = ""
