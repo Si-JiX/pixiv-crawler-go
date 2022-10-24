@@ -3,14 +3,12 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"time"
 )
 
 var Vars = struct {
 	Host              string `mapstructure:"HOST"`
 	PixivRefreshToken string `mapstructure:"PIXIV_REFRESH_TOKEN"`
 	PixivToken        string `mapstructure:"PIXIV_TOKEN"`
-	PixapiTokenTime   string `mapstructure:"pixapi_token_time"`
 	ThreadMax         int    `mapstructure:"thread_max"`
 	Vision            string `mapstructure:"version_name"`
 }{}
@@ -26,7 +24,6 @@ func VarsConfigInit() {
 	Vipers.SetDefault("vision", "1.0.9")
 	Vipers.SetDefault("PIXAPI_TOKEN_KEY", "")
 	Vipers.SetDefault("PIXAPI_RE_TOKEN_KEY", "")
-	Vipers.SetDefault("PIXAPI_TOKEN_TIME", time.Now())
 	Vipers.SetDefault("HOST", "https://app-api.pixiv.net")
 
 	if err := Vipers.ReadInConfig(); err != nil {

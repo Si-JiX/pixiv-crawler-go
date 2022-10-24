@@ -113,7 +113,7 @@ func ChromeDriverLogin() (string, error) {
 	if err := openbrowser(loginURL); err != nil {
 		fmt.Println("failed to open browser, please open the following link in your browser:", loginURL)
 	} else {
-		fmt.Println("browser opened successfully,please input the code value:")
+		fmt.Printf("browser opened successfully,please input the code value:")
 	}
 	_, err := fmt.Scanln(&code)
 	if err == nil {

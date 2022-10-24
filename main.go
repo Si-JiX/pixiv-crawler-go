@@ -18,14 +18,14 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok != nil {
+		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok == nil {
 			config.Vars.PixivRefreshToken = PixivRefreshToken
 			config.Vars.PixivToken = token
 			if err = config.Vipers.WriteConfig(); err != nil {
 				fmt.Println("Update config file failed,please check the permission.")
 			}
 		} else {
-			fmt.Println("refresh token is invalid,please login again")
+			fmt.Println("refresh token is invalid,please login again:", ok)
 		}
 
 	}
