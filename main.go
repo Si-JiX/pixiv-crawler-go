@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
@@ -10,6 +11,8 @@ import (
 )
 
 func init() {
+	Viper := config.VarsConfigInit()
+	fmt.Println(Viper.AllSettings())
 	config.App = config.INIT_PIXIV_AUTH() // init pixiv auth
 }
 

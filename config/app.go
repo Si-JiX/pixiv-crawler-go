@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	pixiv "pixiv-cil/pixiv"
+	"pixiv-cil/pixiv"
 	"strings"
 	"time"
 )
