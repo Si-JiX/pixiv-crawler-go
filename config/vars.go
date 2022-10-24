@@ -3,7 +3,11 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"pixiv-cil/pixiv"
 )
+
+var Vipers = viper.New()
+var App = pixiv.NewApp()
 
 var Vars = struct {
 	Host              string `mapstructure:"host"`
@@ -12,7 +16,6 @@ var Vars = struct {
 	ThreadMax         int    `mapstructure:"thread_max"`
 	VersionName       string `mapstructure:"version_name"`
 }{}
-var Vipers = viper.New()
 
 func LoadVars() bool {
 	if err := Vipers.ReadInConfig(); err != nil {

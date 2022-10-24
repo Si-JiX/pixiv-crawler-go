@@ -117,28 +117,28 @@ func _(f func(string, string, time.Time) error) {
 }
 
 // Login pixiv has deprecated login api, so this function is useless
-func _(username, password string) (*Account, error) {
-	params := &authParams{
-		GetSecureURL: 1,
-		ClientID:     utils.ClientID,
-		ClientSecret: utils.ClientSecret,
-		GrantType:    "password",
-		Username:     username,
-		Password:     password,
-	}
-	a, err := auth(params)
-	if err != nil {
-		return nil, err
-	}
-	return a.User, nil
-}
+//func _(username, password string) (*Account, error) {
+//	params := &authParams{
+//		GetSecureURL: 1,
+//		ClientID:     utils.ClientID,
+//		ClientSecret: utils.ClientSecret,
+//		GrantType:    "password",
+//		Username:     username,
+//		Password:     password,
+//	}
+//	a, err := auth(params)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return a.User, nil
+//}
 
-func LoadAuth(token, refreshToken string, tokenDeadline time.Time) (*Account, error) {
-	_token = token
-	_refreshToken = refreshToken
-	_tokenDeadline = tokenDeadline
-	return refreshAuth()
-}
+//func LoadAuth(token, refreshToken string, tokenDeadline time.Time) (*Account, error) {
+//	_token = token
+//	_refreshToken = refreshToken
+//	_tokenDeadline = tokenDeadline
+//	return refreshAuth()
+//}
 
 func InitAuth(refreshToken string) (string, error) {
 	_refreshToken = refreshToken
@@ -152,7 +152,8 @@ func InitAuth(refreshToken string) (string, error) {
 	if a, err := auth(params); err != nil {
 		return "", err
 	} else {
-		return a.AccessToken, nil
+		_token = a.AccessToken
+		return _token, nil
 	}
 
 }

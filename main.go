@@ -22,17 +22,11 @@ func init() {
 		if ok == nil {
 			fmt.Println("refresh token is invalid,please login again:", ok)
 		}
-
 		config.Vipers.Set("PIXIV_REFRESH_TOKEN", PixivRefreshToken)
 		config.Vipers.Set("PIXIV_TOKEN", token)
 		config.SaveVars()
 		config.VarsUnmarshal()
-		fmt.Println(config.Vipers.AllSettings())
-		fmt.Println(config.Vars.PixivRefreshToken)
-		fmt.Println(config.Vars.PixivToken)
-
 	}
-	config.App = config.INIT_PIXIV_AUTH() // init pixiv auth
 }
 
 var implement = func(c *cli.Context) error {
