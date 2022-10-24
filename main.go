@@ -6,11 +6,19 @@ import (
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
+	"pixiv-cil/pixiv"
 	"pixiv-cil/utils"
 )
 
 func init() {
 	config.VarsConfigInit()
+	if config.Vars.PixivRefreshToken == "" {
+		if PixivRefreshToken, err := pixiv.ChromeDriverLogin(); err != nil {
+			panic(err)
+		} else {
+			config.Vars.PixivRefreshToken = PixivRefreshToken
+		}
+	}
 	config.App = config.INIT_PIXIV_AUTH() // init pixiv auth
 }
 
