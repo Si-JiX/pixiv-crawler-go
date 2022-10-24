@@ -7,28 +7,37 @@ import (
 	"os"
 	"pixiv-cil/config"
 	"pixiv-cil/download"
-	"pixiv-cil/pixiv"
 	"pixiv-cil/utils"
 )
 
 func init() {
 	config.VarsConfigInit()
-	if config.Vars.PixivRefreshToken == "" {
-		PixivRefreshToken, err := pixiv.ChromeDriverLogin()
-		if err != nil {
-			panic(err)
-		}
-		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok == nil {
-			config.Vars.PixivRefreshToken = PixivRefreshToken
-			config.Vars.PixivToken = token
-			if err = config.Vipers.WriteConfig(); err != nil {
-				fmt.Println("Update config file failed,please check the permission.")
-			}
-		} else {
-			fmt.Println("refresh token is invalid,please login again:", ok)
-		}
 
-	}
+	config.Vars.PixivRefreshToken = "PixivRefreshToken"
+	config.Vars.PixivToken = "token"
+	config.SaveVars()
+	fmt.Println(config.Vipers.AllSettings())
+	fmt.Println(config.Vars.PixivRefreshToken)
+	fmt.Println(config.Vars.PixivToken)
+	//if config.Vars.PixivRefreshToken == "" {
+	//	PixivRefreshToken, err := pixiv.ChromeDriverLogin()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	token, ok := pixiv.InitAuth(PixivRefreshToken)
+	//	if ok == nil {
+	//		fmt.Println("refresh token is invalid,please login again:", ok)
+	//	}
+	//	config.Vars.PixivRefreshToken = PixivRefreshToken
+	//	config.Vars.PixivToken = token
+	//	if err = config.Vipers.WriteConfig(); err != nil {
+	//		fmt.Println("Update config file failed,please check the permission.")
+	//	}
+	//	fmt.Println(config.Vipers.AllSettings())
+	//	fmt.Println(config.Vars.PixivRefreshToken)
+	//	fmt.Println(config.Vars.PixivToken)
+	//
+	//}
 	config.App = config.INIT_PIXIV_AUTH() // init pixiv auth
 }
 
