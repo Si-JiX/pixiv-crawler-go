@@ -140,6 +140,23 @@ func LoadAuth(token, refreshToken string, tokenDeadline time.Time) (*Account, er
 	return refreshAuth()
 }
 
+func InitAuth(refreshToken string) (string, error) {
+	_refreshToken = refreshToken
+	params := &authParams{
+		GetSecureURL: 1,
+		ClientID:     utils.ClientID,
+		ClientSecret: utils.ClientSecret,
+		GrantType:    "refresh_token",
+		RefreshToken: _refreshToken,
+	}
+	if a, err := auth(params); err != nil {
+		return "", err
+	} else {
+		return a.AccessToken, nil
+	}
+
+}
+
 func refreshAuth() (*Account, error) {
 	if time.Now().Before(_tokenDeadline) {
 		return nil, nil
