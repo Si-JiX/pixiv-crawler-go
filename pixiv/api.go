@@ -16,9 +16,10 @@ import (
 )
 
 var (
-	_token, _refreshToken string
-	_tokenDeadline        time.Time
-	authHook              func(string, string, time.Time) error
+	TokenVariable        string
+	RefreshTokenVariable string
+	_tokenDeadline       time.Time
+	authHook             func(string, string, time.Time) error
 )
 
 type AccountProfileImages struct {
@@ -96,15 +97,15 @@ func auth(params *authParams) (*authInfo, error) {
 	}
 	if loginErr.HasError {
 		for k, v := range loginErr.Errors {
-			return nil, fmt.Errorf("Login %s error: %s", k, v.Message)
+			return nil, fmt.Errorf("login %s error: %s", k, v.Message)
 		}
 	}
-	_token = res.Response.AccessToken
-	_refreshToken = res.Response.RefreshToken
+	TokenVariable = res.Response.AccessToken
+	RefreshTokenVariable = res.Response.RefreshToken
 	_tokenDeadline = time.Now().Add(time.Duration(res.Response.ExpiresIn) * time.Second)
 
 	if authHook != nil {
-		err = authHook(_token, _refreshToken, _tokenDeadline)
+		err = authHook(TokenVariable, RefreshTokenVariable, _tokenDeadline)
 	}
 
 	return res.Response, err
@@ -141,43 +142,41 @@ func _(f func(string, string, time.Time) error) {
 //}
 
 func InitAuth(refreshToken string) (string, error) {
-	_refreshToken = refreshToken
 	params := &authParams{
 		GetSecureURL: 1,
 		ClientID:     utils.ClientID,
 		ClientSecret: utils.ClientSecret,
 		GrantType:    "refresh_token",
-		RefreshToken: _refreshToken,
+		RefreshToken: refreshToken,
 	}
 	if a, err := auth(params); err != nil {
 		return "", err
 	} else {
-		_token = a.AccessToken
-		return _token, nil
+		return a.AccessToken, nil
 	}
 
 }
 
-func refreshAuth() (*Account, error) {
-	if time.Now().Before(_tokenDeadline) {
-		return nil, nil
-	}
-	if _refreshToken == "" {
-		return nil, fmt.Errorf("missing refresh token")
-	}
-	params := &authParams{
-		GetSecureURL: 1,
-		ClientID:     utils.ClientID,
-		ClientSecret: utils.ClientSecret,
-		GrantType:    "refresh_token",
-		RefreshToken: _refreshToken,
-	}
-	a, err := auth(params)
-	if err != nil {
-		return nil, err
-	}
-	return a.User, nil
-}
+//func refreshAuth() (*Account, error) {
+//	if time.Now().Before(_tokenDeadline) {
+//		return nil, nil
+//	}
+//	if RefreshTokenVariable == "" {
+//		return nil, fmt.Errorf("missing refresh token")
+//	}
+//	params := &authParams{
+//		GetSecureURL: 1,
+//		ClientID:     utils.ClientID,
+//		ClientSecret: utils.ClientSecret,
+//		GrantType:    "refresh_token",
+//		RefreshToken: RefreshTokenVariable,
+//	}
+//	a, err := auth(params)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return a.User, nil
+//}
 
 // download image to file (use 6.0 app-api)
 func download(client *http.Client, url, path, name string) (int64, error) {

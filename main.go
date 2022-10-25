@@ -26,6 +26,8 @@ func init() {
 			config.VarsFile.SaveConfig()
 		}
 	}
+	pixiv.TokenVariable = config.Vars.PixivToken
+	pixiv.RefreshTokenVariable = config.Vars.PixivRefreshToken
 }
 
 var implement = func(c *cli.Context) error {

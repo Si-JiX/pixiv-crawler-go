@@ -26,10 +26,7 @@ func NewApp() *AppPixivAPI {
 
 func (a *AppPixivAPI) request(path string, params, data interface{}, auth bool) (err error) {
 	if auth {
-		if _, err := refreshAuth(); err != nil {
-			return fmt.Errorf("refresh token failed: %v", err)
-		}
-		_, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+_token).QueryStruct(params).ReceiveSuccess(data)
+		_, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+TokenVariable).QueryStruct(params).ReceiveSuccess(data)
 	} else {
 		_, err = a.sling.New().Get(path).QueryStruct(params).ReceiveSuccess(data)
 	}
@@ -48,10 +45,7 @@ func (a *AppPixivAPI) WithDownloadProxy(proxy *url.URL) *AppPixivAPI {
 
 func (a *AppPixivAPI) post(path string, params, data interface{}, auth bool) (err error) {
 	if auth {
-		if _, err := refreshAuth(); err != nil {
-			return fmt.Errorf("refresh token failed: %v", err)
-		}
-		_, err = a.sling.New().Post(path).Set("Authorization", "Bearer "+_token).BodyForm(params).ReceiveSuccess(data)
+		_, err = a.sling.New().Post(path).Set("Authorization", "Bearer "+TokenVariable).BodyForm(params).ReceiveSuccess(data)
 	} else {
 		_, err = a.sling.New().Post(path).BodyForm(params).ReceiveSuccess(data)
 	}
