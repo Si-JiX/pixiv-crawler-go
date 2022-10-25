@@ -18,14 +18,13 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		token, ok := pixiv.InitAuth(PixivRefreshToken)
-		if ok == nil {
+		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok != nil {
 			fmt.Println("refresh token is invalid,please login again:", ok)
+		} else {
+			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", PixivRefreshToken)
+			config.VarsFile.Vipers.Set("PIXIV_TOKEN", token)
+			config.VarsFile.SaveConfig()
 		}
-		config.Vipers.Set("PIXIV_REFRESH_TOKEN", PixivRefreshToken)
-		config.Vipers.Set("PIXIV_TOKEN", token)
-		config.SaveVars()
-		config.VarsUnmarshal()
 	}
 }
 

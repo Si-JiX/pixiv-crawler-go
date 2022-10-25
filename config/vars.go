@@ -6,7 +6,7 @@ import (
 	"pixiv-cil/pixiv"
 )
 
-var Vipers = viper.New()
+var VarsFile *VarsConfig
 var App = pixiv.NewApp()
 
 var Vars = struct {
@@ -17,42 +17,51 @@ var Vars = struct {
 	VersionName       string `mapstructure:"version_name"`
 }{}
 
-func LoadVars() bool {
-	if err := Vipers.ReadInConfig(); err != nil {
-		fmt.Printf("Read config-settings.json Error:[%v]\n", err)
-		return false
-	}
-	if err := Vipers.WriteConfig(); err != nil {
-		fmt.Println("Update config file failed,please check the permission.")
-	}
-	return true
+type VarsConfig struct {
+	Vipers     *viper.Viper
+	UpdateFile bool
 }
-func VarsUnmarshal() {
-	if err := Vipers.Unmarshal(&Vars); err != nil {
+
+func (is *VarsConfig) LoadConfig() {
+	if err := is.Vipers.ReadInConfig(); err != nil {
+		fmt.Printf("Read config-settings.json Error:[%v]\n", err)
+		is.UpdateFile = false
+	} else {
+		is.UpdateFile = true
+	}
+}
+func (is *VarsConfig) VarsUnmarshal() {
+	if err := is.Vipers.Unmarshal(&Vars); err != nil {
 		fmt.Println(err)
 	}
 }
-func SaveVars() {
-	if !LoadVars() {
-		if err := Vipers.SafeWriteConfig(); err != nil {
+func (is *VarsConfig) SaveConfig() {
+	is.LoadConfig()
+	if !is.UpdateFile {
+		if err := is.Vipers.SafeWriteConfig(); err != nil {
 			fmt.Println("Safe write config file failed,please check the permission or create config-settings.json file manually.")
 			fmt.Println("Detailed error message as follows:", err)
 		} else {
 			fmt.Println("safe write config file success!")
 		}
+	} else {
+		if err := is.Vipers.WriteConfig(); err != nil {
+			fmt.Println("Update config file failed,please check the permission.")
+		}
 	}
+	is.VarsUnmarshal()
 }
 
 func VarsConfigInit() {
-	Vipers.SetConfigName("config-settings")
-	Vipers.SetConfigType("json")
-	Vipers.AddConfigPath(".")
+	VarsFile = &VarsConfig{Vipers: viper.New()}
+	VarsFile.Vipers.SetConfigName("config-settings")
+	VarsFile.Vipers.SetConfigType("json")
+	VarsFile.Vipers.AddConfigPath(".")
 	// path to look for the config file in
-	Vipers.SetDefault("HOST", "https://app-api.pixiv.net")
-	Vipers.SetDefault("thread_max", 16)
-	Vipers.Set("version_name", "1.0.9")
-	Vipers.SetDefault("PIXIV_TOKEN", "")
-	Vipers.SetDefault("PIXIV_REFRESH_TOKEN", "")
-	SaveVars()
-	VarsUnmarshal()
+	VarsFile.Vipers.SetDefault("host", "https://app-api.pixiv.net")
+	VarsFile.Vipers.SetDefault("thread_max", 16)
+	VarsFile.Vipers.Set("version_name", "1.1.3")
+	VarsFile.Vipers.SetDefault("PIXIV_TOKEN", "")
+	VarsFile.Vipers.SetDefault("PIXIV_REFRESH_TOKEN", "")
+	VarsFile.SaveConfig()
 }

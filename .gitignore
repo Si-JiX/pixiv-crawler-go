@@ -5,6 +5,7 @@
 *.so
 *.dylib
 author_key.txt
+config-settings.json
 # Test binary, built with `go test -c`
 *.test
 
