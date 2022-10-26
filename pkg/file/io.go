@@ -29,15 +29,3 @@ func WriteFile(file_path string, data string, perm os.FileMode) {
 		fmt.Println("write file error:", ok)
 	}
 }
-
-func Input(start_info string, info string) string {
-	fmt.Println(start_info)
-	for {
-		var input string
-		fmt.Println(info)
-		_, _ = fmt.Scanln(&input)
-		if input != "" {
-			return input
-		}
-	}
-}
