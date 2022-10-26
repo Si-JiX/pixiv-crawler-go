@@ -5,7 +5,7 @@ type UserImages struct {
 }
 
 type User struct {
-	ID         uint64 `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	Account    string `json:"account"`
 	Comment    string `json:"comment"`

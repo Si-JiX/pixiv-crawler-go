@@ -463,12 +463,12 @@ func (a *AppPixivAPI) UserBookmarkTagsIllust(restrict string, offset int) (*User
 }
 
 type userFollowStatsParams struct {
-	UserID   uint64 `url:"user_id,omitempty"`
+	UserID   int    `url:"user_id,omitempty"`
 	Restrict string `url:"restrict,omitempty"`
 	Offset   int    `url:"offset,omitempty"`
 }
 
-func userFollowStats(a *AppPixivAPI, urlEnd string, userID uint64, restrict string, offset int) (*UserFollowList, error) {
+func userFollowStats(a *AppPixivAPI, urlEnd string, userID int, restrict string, offset int) (*UserFollowList, error) {
 	data := &UserFollowList{}
 	params := &userFollowStatsParams{
 		UserID:   userID,
@@ -482,12 +482,12 @@ func userFollowStats(a *AppPixivAPI, urlEnd string, userID uint64, restrict stri
 }
 
 // UserFollowing Following user list
-func (a *AppPixivAPI) UserFollowing(userID uint64, restrict string, offset int) (*UserFollowList, error) {
+func (a *AppPixivAPI) UserFollowing(userID int, restrict string, offset int) (*UserFollowList, error) {
 	return userFollowStats(a, "following", userID, restrict, offset)
 }
 
 // UserFollower Follower user list
-func (a *AppPixivAPI) UserFollower(userID uint64, restrict string, offset int) (*UserFollowList, error) {
+func (a *AppPixivAPI) UserFollower(userID int, restrict string, offset int) (*UserFollowList, error) {
 	return userFollowStats(a, "follower", userID, restrict, offset)
 }
 

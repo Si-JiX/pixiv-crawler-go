@@ -42,6 +42,8 @@ func main() {
 			src.AuthorImageALL(command.CommandLines.AuthorID)
 		} else if command.CommandLines.URL != "" {
 			src.CurrentDownloader(utils.GetInt(command.CommandLines.URL))
+		} else if command.CommandLines.Following {
+			src.GET_USER_FOLLOWING(command.CommandLines.UserID)
 		} else {
 			_ = cli.ShowAppHelp(c)
 		}

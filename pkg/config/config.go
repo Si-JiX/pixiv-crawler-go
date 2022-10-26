@@ -13,6 +13,7 @@ var Vars = struct {
 	Host              string `mapstructure:"host"`
 	PixivRefreshToken string `mapstructure:"pixiv_refresh_token"`
 	PixivToken        string `mapstructure:"pixiv_token"`
+	UserID            int    `mapstructure:"pixiv_user_id"`
 	ThreadMax         int    `mapstructure:"thread_max"`
 	VersionName       string `mapstructure:"version_name"`
 }{}

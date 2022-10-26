@@ -46,15 +46,23 @@ func AuthorImageALL(author_id int) {
 	}
 }
 
-//func GET_USER_FOLLOWING() {
-//	following, err := config.App.UserFollowing()
-//	if err != nil {
-//		fmt.Println("Request user following fail,please check network", err)
-//	}
-//	for _, user := range following.UserPreviews {
-//		fmt.Println(user.User.ID, user.User.Name)
-//	}
-//}
+func GET_USER_FOLLOWING(UserID int) {
+	if UserID == 0 {
+		UserID = config.Vars.UserID
+	}
+	following, err := config.App.UserFollowing(UserID, "public", 0)
+	if err != nil {
+		fmt.Println("Request user following fail,please check network", err)
+	}
+	for index, user := range following.UserPreviews {
+		fmt.Println("index:", index, "\tuser_id:", user.User.ID, "\tuser_name:", user.User.Name)
+	}
+	fmt.Println("一共", len(following.UserPreviews), "个关注的用户")
+	for _, user := range following.UserPreviews {
+		AuthorImageALL(user.User.ID)
+	}
+
+}
 
 func GET_AUTHOR_INFO(author_id int, page int) []string {
 	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)

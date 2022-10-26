@@ -5,12 +5,14 @@ import (
 	"strconv"
 )
 
-func Input(start_info string, info string) string {
-	fmt.Printf(start_info)
+func Input(info1 string, info string) string {
+	fmt.Printf(info1)
 	var input string
 	_, _ = fmt.Scanln(&input)
 	if input != "" {
 		return input
+	} else if input == "quit" || input == "exit" {
+		return ""
 	} else {
 		return Input(info, info)
 	}
