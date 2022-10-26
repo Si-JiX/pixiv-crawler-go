@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"pixiv-cil/pkg/threadpool"
 	"pixiv-cil/utils"
 	"time"
 
@@ -200,9 +201,8 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 }
 
 func (a *AppPixivAPI) ThreadDownloadImage(url string, Length int) {
-	defer utils.WG.Done()
 	utils.CurrentImageIndex += 1
-	utils.CH <- struct{}{}
+	defer threadpool.Threading.Done()
 	dclient := &http.Client{}
 	if a.proxy != nil {
 		dclient.Transport = &http.Transport{
@@ -213,7 +213,6 @@ func (a *AppPixivAPI) ThreadDownloadImage(url string, Length int) {
 		dclient.Timeout = a.timeout
 	}
 	_, e := download(dclient, url, "imageFile", filepath.Base(url))
-	<-utils.CH
 	if e != nil {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
+	"pixiv-cil/pkg/threadpool"
 	"pixiv-cil/src/app"
 	"pixiv-cil/utils"
 	"strconv"
@@ -37,8 +38,9 @@ func close_thread() {
 func AuthorImageALL(author_id int) {
 	if image_list := GET_AUTHOR_INFO(author_id, 0); len(image_list) != 0 {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
+		threadpool.InitThread()
 		for i := 0; i < len(image_list); i++ {
-			utils.WG.Add(1)
+			threadpool.Threading.Add()
 			go app.App.ThreadDownloadImage(image_list[i], len(image_list))
 		}
 		close_thread()
