@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os/exec"
+	"pixiv-cil/pkg/input"
 	"runtime"
 	"strings"
 )
@@ -50,7 +51,7 @@ func getLoginURL() (string, string) {
 	return codeVerifier, "https://app-api.pixiv.net/web/v1/login" + "?" + urlValues.Encode()
 }
 
-func loginPixiv(codeVerifier, code string) (string, error) {
+func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
 	urlValues := url.Values{
 		"client_id":      {"MOBrBDS8blbauoSck0ZfDbtuzpyT"},
 		"client_secret":  {"lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"},
@@ -67,25 +68,25 @@ func loginPixiv(codeVerifier, code string) (string, error) {
 	}
 	req, err := http.NewRequest("POST", "https://oauth.secure.pixiv.net/auth/token", strings.NewReader(urlValues.Encode()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("User-Agent", "PixivAndroidApp/5.0.234 (Android 11; Pixel 5)")
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer func() { _ = resp.Body.Close() }()
 	all, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	res := make(map[string]interface{})
-	err = json.Unmarshal(all, &res)
-	if err != nil {
-		return "", err
+	var accessToken *AccessToken
+	if err = json.Unmarshal(all, &accessToken); err != nil {
+		return nil, err
+	} else {
+		return accessToken, nil
 	}
-	return res["refresh_token"].(string), nil
 }
 
 func openbrowser(url string) error {
@@ -102,8 +103,7 @@ func openbrowser(url string) error {
 	}
 	return err
 }
-func ChromeDriverLogin() (string, error) {
-	var code string
+func ChromeDriverLogin() (*AccessToken, error) {
 	codeVerifier, loginURL := getLoginURL() // Get the login URL and code verifier
 	fmt.Println("please open the following link in your browser:", loginURL)
 	fmt.Println("please press f12 to open the developer console, and switch to the network tab.")
@@ -115,12 +115,6 @@ func ChromeDriverLogin() (string, error) {
 	} else {
 		fmt.Printf("browser opened successfully,please input the code value:")
 	}
-	_, err := fmt.Scanln(&code)
-	if err == nil {
-		refreshToken, err := loginPixiv(codeVerifier, code)
-		if err == nil {
-			return refreshToken, nil
-		}
-	}
-	return "", err
+	return loginPixiv(codeVerifier, input.Input("please input the code value:", ">"))
+
 }

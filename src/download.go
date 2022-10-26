@@ -46,6 +46,16 @@ func AuthorImageALL(author_id int) {
 	}
 }
 
+//func GET_USER_FOLLOWING() {
+//	following, err := config.App.UserFollowing()
+//	if err != nil {
+//		fmt.Println("Request user following fail,please check network", err)
+//	}
+//	for _, user := range following.UserPreviews {
+//		fmt.Println(user.User.ID, user.User.Name)
+//	}
+//}
+
 func GET_AUTHOR_INFO(author_id int, page int) []string {
 	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
 	for _, Illust := range illusts {

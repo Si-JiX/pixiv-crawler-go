@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
@@ -16,15 +15,12 @@ import (
 func init() {
 	config.VarsConfigInit()
 	if config.Vars.PixivRefreshToken == "" {
-		PixivRefreshToken, err := pixiv.ChromeDriverLogin()
-		if err != nil {
+		if accessToken, err := pixiv.ChromeDriverLogin(); err != nil {
 			panic(err)
-		}
-		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok != nil {
-			fmt.Println("refresh token is invalid,please login again:", ok)
 		} else {
-			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", PixivRefreshToken)
-			config.VarsFile.Vipers.Set("PIXIV_TOKEN", token)
+			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", accessToken.RefreshToken)
+			config.VarsFile.Vipers.Set("PIXIV_TOKEN", accessToken.AccessToken)
+			config.VarsFile.Vipers.Set("PIXIV_USER_ID", accessToken.User.ID)
 			config.VarsFile.SaveConfig()
 		}
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 func Input(start_info string, info string) string {
-	fmt.Println(start_info)
+	fmt.Printf(start_info)
 	var input string
 	_, _ = fmt.Scanln(&input)
 	if input != "" {
