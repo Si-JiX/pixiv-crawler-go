@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"pixiv-cil/pixiv"
+	"pixiv-cil/src/pixiv"
 )
 
 var VarsFile *VarsConfig

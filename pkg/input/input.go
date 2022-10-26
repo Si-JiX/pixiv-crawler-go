@@ -7,13 +7,12 @@ import (
 
 func Input(start_info string, info string) string {
 	fmt.Println(start_info)
-	for {
-		var input string
-		fmt.Println(info)
-		_, _ = fmt.Scanln(&input)
-		if input != "" {
-			return input
-		}
+	var input string
+	_, _ = fmt.Scanln(&input)
+	if input != "" {
+		return input
+	} else {
+		return Input(info, info)
 	}
 }
 

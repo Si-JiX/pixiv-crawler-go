@@ -5,22 +5,22 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"pixiv-cil/pixiv"
 	"pixiv-cil/pkg/command"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
 	"pixiv-cil/src"
+	pixiv2 "pixiv-cil/src/pixiv"
 	"pixiv-cil/utils"
 )
 
 func init() {
 	config.VarsConfigInit()
 	if config.Vars.PixivRefreshToken == "" {
-		PixivRefreshToken, err := pixiv.ChromeDriverLogin()
+		PixivRefreshToken, err := pixiv2.ChromeDriverLogin()
 		if err != nil {
 			panic(err)
 		}
-		if token, ok := pixiv.InitAuth(PixivRefreshToken); ok != nil {
+		if token, ok := pixiv2.InitAuth(PixivRefreshToken); ok != nil {
 			fmt.Println("refresh token is invalid,please login again:", ok)
 		} else {
 			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", PixivRefreshToken)
@@ -28,8 +28,8 @@ func init() {
 			config.VarsFile.SaveConfig()
 		}
 	}
-	pixiv.TokenVariable = config.Vars.PixivToken
-	pixiv.RefreshTokenVariable = config.Vars.PixivRefreshToken
+	pixiv2.TokenVariable = config.Vars.PixivToken
+	pixiv2.RefreshTokenVariable = config.Vars.PixivRefreshToken
 }
 
 func main() {
