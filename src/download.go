@@ -63,6 +63,27 @@ func GET_USER_FOLLOWING(UserID int) {
 
 }
 
+func GET_RECOMMEND(next_url string) {
+	if recommended, err := app.App.Recommended(next_url, true); err != nil {
+		fmt.Println("Request recommend fail,please check network", err)
+	} else {
+		for _, illust := range recommended.Illusts {
+			if illust.MetaSinglePage.OriginalImageURL == "" {
+				for _, img := range illust.MetaPages {
+					utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
+				}
+			} else {
+				utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
+			}
+		}
+		fmt.Println(utils.ImageUrlList)
+		fmt.Println("一共", len(utils.ImageUrlList), "张图片,开始下载中...")
+		//if recommended.NextURL != "" {
+		//	GET_RECOMMEND(recommended.NextURL)
+	}
+
+}
+
 func GET_AUTHOR_INFO(author_id int, page int) []string {
 	illusts, next, err := app.App.UserIllusts(author_id, "illust", page)
 	for _, Illust := range illusts {

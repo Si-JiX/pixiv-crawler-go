@@ -7,6 +7,7 @@ import (
 // INT string converted to type int.
 func INT(s string) int {
 	sLen := len(s)
+	const IntSize = 32 << (^uint(0) >> 63)
 	if IntSize == 32 && (0 < sLen && sLen < 10) ||
 		IntSize == 64 && (0 < sLen && sLen < 19) {
 		// Fast path for small integers that fit int type.

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"pixiv-cil/pkg/threadpool"
+	"strings"
 	"time"
 
 	"github.com/dghubble/sling"
@@ -301,6 +302,29 @@ type illustRecommendedParams struct {
 // IllustRecommended Home Recommendation
 //
 // contentType: [illust, manga]
+
+func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*IllustRecommended, error) {
+	data := &IllustRecommended{}
+	params := &illustRecommendedParams{
+		IncludePrivacyPolicy:  "true",
+		IncludeRankingIllusts: true,
+	}
+	if url == "" {
+		if requireAuth {
+			url = RECOMMENDED
+		} else {
+			url = RECOMMENDED_NO_LOGIN
+		}
+	} else {
+		url = strings.ReplaceAll(url, API_BASE, "")
+		params = nil
+	}
+	if err := a.request(url, params, data, true); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*IllustRecommended, error) {
 	data := &IllustRecommended{}
 	params := &illustRecommendedParams{
