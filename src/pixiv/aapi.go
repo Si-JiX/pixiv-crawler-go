@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"path/filepath"
 	"pixiv-cil/pkg/threadpool"
-	"pixiv-cil/utils"
 	"time"
 
 	"github.com/dghubble/sling"
@@ -200,8 +199,7 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	return
 }
 
-func (a *AppPixivAPI) ThreadDownloadImage(url string, Length int) {
-	utils.CurrentImageIndex += 1
+func (a *AppPixivAPI) ThreadDownloadImage(url string) {
 	defer threadpool.Threading.Done()
 	dclient := &http.Client{}
 	if a.proxy != nil {
@@ -216,7 +214,8 @@ func (a *AppPixivAPI) ThreadDownloadImage(url string, Length int) {
 	if e != nil {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}
-	defer fmt.Printf("download image:%d/%d\r", utils.CurrentImageIndex, Length)
+	threadpool.Threading.ProgressCountAdd()
+	threadpool.Threading.GetProgressInfo()
 
 }
 

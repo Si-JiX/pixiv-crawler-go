@@ -29,21 +29,17 @@ func CurrentDownloader(IllustID interface{}) {
 	}
 }
 
-func close_thread() {
-	utils.ImageUrlList = nil
-	utils.WG.Wait() // Wait for all threads to finish
-	utils.CurrentImageIndex = 0
-}
-
 func AuthorImageALL(author_id int) {
 	if image_list := GET_AUTHOR_INFO(author_id, 0); len(image_list) != 0 {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
 		threadpool.InitThread()
+		threadpool.Threading.ProgressLength = len(image_list)
 		for i := 0; i < len(image_list); i++ {
 			threadpool.Threading.Add()
-			go app.App.ThreadDownloadImage(image_list[i], len(image_list))
+			go app.App.ThreadDownloadImage(image_list[i])
 		}
-		close_thread()
+		utils.ImageUrlList = nil
+		threadpool.Threading.Close() // Wait for all threads to finish
 	} else {
 		fmt.Println("Request author info fail,please check author_id or network")
 	}
