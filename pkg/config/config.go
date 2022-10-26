@@ -3,11 +3,9 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"pixiv-cil/src/pixiv"
 )
 
 var VarsFile *VarsConfig
-var App = pixiv.NewApp()
 
 var Vars = struct {
 	Host              string `mapstructure:"host"`

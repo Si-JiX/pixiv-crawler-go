@@ -25,10 +25,18 @@ func NewApp() *AppPixivAPI {
 }
 
 func (a *AppPixivAPI) request(path string, params, data interface{}, auth bool) (err error) {
+	var res *http.Response
 	if auth {
-		_, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+TokenVariable).QueryStruct(params).ReceiveSuccess(data)
+		res, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+TokenVariable).QueryStruct(params).ReceiveSuccess(data)
+		if res.StatusCode == 400 {
+			if !RefreshAuth() {
+				return errors.New("refresh token failed")
+			} else {
+				return a.request(path, params, data, auth)
+			}
+		}
 	} else {
-		_, err = a.sling.New().Get(path).QueryStruct(params).ReceiveSuccess(data)
+		res, err = a.sling.New().Get(path).QueryStruct(params).ReceiveSuccess(data)
 	}
 	return err
 }

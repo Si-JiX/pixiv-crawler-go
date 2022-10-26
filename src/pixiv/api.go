@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"pixiv-cil/pkg/config"
 	"pixiv-cil/utils"
 	"time"
 
@@ -141,19 +142,24 @@ func _(f func(string, string, time.Time) error) {
 //	return refreshAuth()
 //}
 
-func InitAuth(refreshToken string) (string, error) {
+func RefreshAuth() bool {
 	params := &authParams{
 		GetSecureURL: 1,
 		ClientID:     utils.ClientID,
 		ClientSecret: utils.ClientSecret,
 		GrantType:    "refresh_token",
-		RefreshToken: refreshToken,
+		RefreshToken: config.Vars.PixivRefreshToken,
 	}
 	if a, err := auth(params); err != nil {
-		return "", err
+		fmt.Println("refresh auth error: ", err)
+		return false
 	} else {
-		return a.AccessToken, nil
+		config.VarsFile.Vipers.Set("PIXIV_TOKEN", a.AccessToken)
+		config.VarsFile.SaveConfig()
+		TokenVariable = a.AccessToken
+		fmt.Println("refresh auth success, new token: ", a.AccessToken)
 	}
+	return true
 
 }
 
