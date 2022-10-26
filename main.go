@@ -5,11 +5,11 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"pixiv-cil/download"
 	"pixiv-cil/pixiv"
 	"pixiv-cil/pkg/command"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
+	"pixiv-cil/src"
 	"pixiv-cil/utils"
 )
 
@@ -41,11 +41,11 @@ func main() {
 	cli_app.Flags = command.CommandLineFlag
 	cli_app.Action = func(c *cli.Context) error {
 		if command.CommandLines.IllustID != 0 {
-			download.CurrentDownloader(command.CommandLines.IllustID)
+			src.CurrentDownloader(command.CommandLines.IllustID)
 		} else if command.CommandLines.AuthorID != 0 {
-			download.AuthorImageALL(command.CommandLines.AuthorID)
+			src.AuthorImageALL(command.CommandLines.AuthorID)
 		} else if command.CommandLines.URL != "" {
-			download.CurrentDownloader(utils.GetInt(command.CommandLines.URL))
+			src.CurrentDownloader(utils.GetInt(command.CommandLines.URL))
 		} else {
 			_ = cli.ShowAppHelp(c)
 		}

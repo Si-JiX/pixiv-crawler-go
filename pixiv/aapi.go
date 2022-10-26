@@ -137,9 +137,7 @@ type illustDetailParams struct {
 // IllustDetail get a detailed illust with id
 func (a *AppPixivAPI) IllustDetail(id int) (*Illust, error) {
 	data := &IllustResponse{}
-	params := &illustDetailParams{
-		IllustID: id,
-	}
+	params := &illustDetailParams{IllustID: id}
 	if err := a.request(DETAIL, params, data, true); err != nil {
 		return nil, err
 	}
