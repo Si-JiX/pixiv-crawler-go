@@ -39,7 +39,7 @@ func main() {
 		if arguments.CommandLines.IllustID != 0 {
 			src.CurrentDownloader(arguments.CommandLines.IllustID)
 		} else if arguments.CommandLines.AuthorID != 0 {
-			src.AuthorImageALL(arguments.CommandLines.AuthorID)
+			src.ThreadDownloadImages(src.GET_AUTHOR_INFO(arguments.CommandLines.AuthorID, 0))
 		} else if arguments.CommandLines.URL != "" {
 			src.CurrentDownloader(utils.GetInt(arguments.CommandLines.URL))
 		} else if arguments.CommandLines.Following {
@@ -47,7 +47,9 @@ func main() {
 		} else if arguments.CommandLines.Recommend {
 			src.GET_RECOMMEND("")
 		} else {
-			_ = cli.ShowAppHelp(c)
+			if os.Args[1] == "-h" || os.Args[1] == "--help" {
+				_ = cli.ShowAppHelp(c)
+			}
 		}
 		return nil
 	}

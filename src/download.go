@@ -28,9 +28,8 @@ func CurrentDownloader(IllustID interface{}) {
 		}
 	}
 }
-
-func AuthorImageALL(author_id int) {
-	if image_list := GET_AUTHOR_INFO(author_id, 0); len(image_list) != 0 {
+func ThreadDownloadImages(image_list []string) {
+	if len(image_list) != 0 {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
 		threadpool.InitThread()
 		threadpool.Threading.ProgressLength = len(image_list)
@@ -41,7 +40,7 @@ func AuthorImageALL(author_id int) {
 		utils.ImageUrlList = nil
 		threadpool.Threading.Close() // Wait for all threads to finish
 	} else {
-		fmt.Println("Request author info fail,please check author_id or network")
+		fmt.Println("add image list fail,please check image list")
 	}
 }
 
@@ -58,7 +57,7 @@ func GET_USER_FOLLOWING(UserID int) {
 	}
 	fmt.Println("一共", len(following.UserPreviews), "个关注的用户")
 	for _, user := range following.UserPreviews {
-		AuthorImageALL(user.User.ID)
+		ThreadDownloadImages(GET_AUTHOR_INFO(user.User.ID, 0))
 	}
 
 }
@@ -76,10 +75,11 @@ func GET_RECOMMEND(next_url string) {
 				utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
 			}
 		}
-		fmt.Println(utils.ImageUrlList)
-		fmt.Println("一共", len(utils.ImageUrlList), "张图片,开始下载中...")
-		//if recommended.NextURL != "" {
-		//	GET_RECOMMEND(recommended.NextURL)
+		ThreadDownloadImages(utils.ImageUrlList)
+		if recommended.NextURL != "" {
+			//fmt.Println(recommended.NextURL)
+			GET_RECOMMEND(recommended.NextURL)
+		}
 	}
 
 }
