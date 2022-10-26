@@ -4,7 +4,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"pixiv-cil/pkg/command"
+	"pixiv-cil/pkg/arguments"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
 	"pixiv-cil/src"
@@ -34,16 +34,18 @@ func main() {
 	cli_app.Name = "image downloader"
 	cli_app.Version = config.Vars.VersionName
 	cli_app.Usage = "download image from pixiv "
-	cli_app.Flags = command.CommandLineFlag
+	cli_app.Flags = arguments.CommandLineFlag
 	cli_app.Action = func(c *cli.Context) error {
-		if command.CommandLines.IllustID != 0 {
-			src.CurrentDownloader(command.CommandLines.IllustID)
-		} else if command.CommandLines.AuthorID != 0 {
-			src.AuthorImageALL(command.CommandLines.AuthorID)
-		} else if command.CommandLines.URL != "" {
-			src.CurrentDownloader(utils.GetInt(command.CommandLines.URL))
-		} else if command.CommandLines.Following {
-			src.GET_USER_FOLLOWING(command.CommandLines.UserID)
+		if arguments.CommandLines.IllustID != 0 {
+			src.CurrentDownloader(arguments.CommandLines.IllustID)
+		} else if arguments.CommandLines.AuthorID != 0 {
+			src.AuthorImageALL(arguments.CommandLines.AuthorID)
+		} else if arguments.CommandLines.URL != "" {
+			src.CurrentDownloader(utils.GetInt(arguments.CommandLines.URL))
+		} else if arguments.CommandLines.Following {
+			src.GET_USER_FOLLOWING(arguments.CommandLines.UserID)
+		} else if arguments.CommandLines.Recommend {
+			src.GET_RECOMMEND("")
 		} else {
 			_ = cli.ShowAppHelp(c)
 		}

@@ -1,4 +1,4 @@
-package command
+package arguments
 
 import (
 	"gopkg.in/urfave/cli.v1"
@@ -8,6 +8,7 @@ var CommandLines = struct {
 	IllustID  int
 	UserID    int
 	Following bool
+	Recommend bool
 	AuthorID  int
 	Name      string
 	URL       string
@@ -42,6 +43,11 @@ var CommandLineFlag = []cli.Flag{
 		Name:        "f, following",
 		Usage:       "following",
 		Destination: &CommandLines.Following,
+	},
+	cli.BoolFlag{
+		Name:        "r, recommend",
+		Usage:       "recommend illust",
+		Destination: &CommandLines.Recommend,
 	},
 	cli.IntFlag{
 		Name:        "a, author",
