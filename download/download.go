@@ -2,7 +2,8 @@ package download
 
 import (
 	"fmt"
-	"pixiv-cil/config"
+	config2 "pixiv-cil/pkg/config"
+	"pixiv-cil/pkg/file"
 	"pixiv-cil/utils"
 	"strconv"
 )
@@ -17,10 +18,10 @@ func CurrentDownloader(IllustID interface{}) {
 	default:
 		fmt.Println("you input is not a number,please check", IllustID)
 	}
-	if utils.ListFind(config.ShowFileList("./imageFile"), strconv.Itoa(illust_id)) {
+	if utils.ListFind(file.ShowFileList("./imageFile"), strconv.Itoa(illust_id)) {
 		fmt.Println(IllustID, "is exist, skip")
 	} else {
-		if _, err := config.App.Download(illust_id, "imageFile"); err != nil {
+		if _, err := config2.App.Download(illust_id, "imageFile"); err != nil {
 			fmt.Println("download fail", IllustID, err)
 		}
 	}
@@ -37,7 +38,7 @@ func AuthorImageALL(author_id int) {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
 		for i := 0; i < len(image_list); i++ {
 			utils.WG.Add(1)
-			go config.App.ThreadDownloadImage(image_list[i], len(image_list))
+			go config2.App.ThreadDownloadImage(image_list[i], len(image_list))
 		}
 		close_thread()
 	} else {
@@ -46,7 +47,7 @@ func AuthorImageALL(author_id int) {
 }
 
 func GET_AUTHOR_INFO(author_id int, page int) []string {
-	illusts, next, err := config.App.UserIllusts(author_id, "illust", page)
+	illusts, next, err := config2.App.UserIllusts(author_id, "illust", page)
 	for _, Illust := range illusts {
 		// Test if the image is a manga or not
 		if Illust.MetaSinglePage.OriginalImageURL == "" {
