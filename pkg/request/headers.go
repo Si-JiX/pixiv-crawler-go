@@ -6,7 +6,7 @@ import (
 )
 
 func (req *Request) AddHeader(key string, value string) {
-	req.requests.Header.Set(key, value)
+	req.Header[key] = value
 }
 
 func (req *Request) Headers() {
@@ -15,6 +15,9 @@ func (req *Request) Headers() {
 	req.AddHeader("App-OS", "ios")
 	req.AddHeader("App-OS-VERSION", "12.2")
 	req.AddHeader("App-Version", "7.6.2")
+	for k, v := range req.Header {
+		req.requests.Header.Set(k, v)
+	}
 	if config.Vars.PixivToken != "" {
 		req.AddHeader("Authorization", "Bearer "+config.Vars.PixivToken)
 	} else {

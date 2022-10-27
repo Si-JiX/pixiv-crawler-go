@@ -11,6 +11,7 @@ import (
 
 type Request struct {
 	requests *http.Request
+	Header   map[string]string
 	Params   url.Values
 }
 
@@ -23,7 +24,7 @@ type Response struct {
 }
 
 func Get(url_api string, params map[string]string) *Response {
-	req := &Request{}
+	req := &Request{Params: url.Values{}, Header: map[string]string{}}
 	if params != nil {
 		url_api = url_api + "?" + req.EncodeParams(params)
 	}
@@ -37,16 +38,15 @@ func Get(url_api string, params map[string]string) *Response {
 	return nil
 }
 
-func Post(url_api string) (resp *Response, err error) {
-	req := &Request{}
-	req.requests, err = http.NewRequest("POST", url_api, nil)
-	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+func Post(url_api string, req *Request) *Response {
+	req.requests, _ = http.NewRequest("POST", url_api, nil)
 	req.Headers()
+	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	//fmt.Println(req.requests.Header)
 	if response, err := http.DefaultClient.Do(req.requests); err != nil {
-		return nil, err
+		return nil
 	} else {
-
-		return &Response{Response: response, Request: req}, nil
+		return &Response{Response: response, Request: req, Body: response.Body}
 	}
 }
 
@@ -63,14 +63,14 @@ func (resp *Response) Text() string {
 
 func (resp *Response) Json(value interface{}) interface{} {
 	resp.Content() //	Init resp.content
-	if strings.Contains("Error occurred at the OAuth process", string(resp.content)) {
-		fmt.Println("Token expired, please re-login")
-		return nil
+	if strings.Contains("OAuth", string(resp.content)) {
+		fmt.Println("Token expired, Refreshing...")
+		//RefreshAuth()
 	}
+	//RefreshAuth()
 	if err := json.Unmarshal(resp.content, value); err != nil {
 		fmt.Println("json.Unmarshal error:", err)
 	}
-
 	return value
 }
 
