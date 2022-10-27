@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Request struct {
@@ -62,9 +63,14 @@ func (resp *Response) Text() string {
 
 func (resp *Response) Json(value interface{}) interface{} {
 	resp.Content() //	Init resp.content
+	if strings.Contains("Error occurred at the OAuth process", string(resp.content)) {
+		fmt.Println("Token expired, please re-login")
+		return nil
+	}
 	if err := json.Unmarshal(resp.content, value); err != nil {
 		fmt.Println("json.Unmarshal error:", err)
 	}
+
 	return value
 }
 

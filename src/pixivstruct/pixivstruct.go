@@ -1,25 +1,22 @@
 package pixivstruct
 
-type ErrorT struct {
-	Error struct {
-		UserMessage        string `json:"user_message"`
-		Message            string `json:"message"`
-		Reason             string `json:"reason"`
-		UserMessageDetails struct {
-		} `json:"user_message_details"`
-	} `json:"error"`
+type Error struct {
+	UserMessage        string `json:"user_message"`
+	Message            string `json:"message"`
+	Reason             string `json:"reason"`
+	UserMessageDetails struct {
+	} `json:"user_message_details"`
 }
 type UserImages struct {
 	Medium string `json:"medium"`
 }
 
 type User struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Account    string `json:"account"`
-	Comment    string `json:"comment"`
-	IsFollowed bool   `json:"is_followed"`
-
+	ID            int         `json:"id"`
+	Name          string      `json:"name"`
+	Account       string      `json:"account"`
+	Comment       string      `json:"comment"`
+	IsFollowed    bool        `json:"is_followed"`
 	ProfileImages *UserImages `json:"profile_image_urls"`
 }
 
@@ -159,6 +156,7 @@ type IllustCommentAddResult struct {
 }
 
 type IllustRecommended struct {
+	Error          Error          `json:"error"`
 	Illusts        []Illust       `json:"illusts"`
 	RankingIllusts []interface{}  `json:"ranking_illusts"`
 	ContestExists  bool           `json:"contest_exists"`
