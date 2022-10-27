@@ -6,55 +6,39 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 type Request struct {
+	Header   map[string]string
 	requests *http.Request
-	result   []byte
 	Params   url.Values
 }
 
 type Response struct {
 	Response *http.Response
+	Request  *Request
+	Body     io.ReadCloser
 	content  []byte
 	text     string
-	Request  *Request
 }
 
-func (req *Request) QueryData() io.ReadCloser {
-	return io.NopCloser(strings.NewReader(req.EncodeParams()))
-}
-
-func (req *Request) EncodeParams(datas ...map[string]string) string {
-	for _, data := range datas {
-		for key, value := range data {
-			req.Params.Add(key, value)
-		}
-	}
-	return req.Params.Encode()
-}
-
-func (req *Request) Headers() {
-	for k, v := range map[string]string{} {
-		req.requests.Header.Set(k, v)
-	}
-}
-func (req *Request) Get(url_api string, params map[string]string) (resp *Response, err error) {
+func Get(url_api string, params map[string]string) *Response {
+	req := &Request{}
 	if params != nil {
 		url_api = url_api + "?" + req.EncodeParams(params)
 	}
-	req.requests, err = http.NewRequest("GET", url_api, nil)
+	req.requests, _ = http.NewRequest("GET", url_api, nil)
 	req.Headers()
-	response, err := http.DefaultClient.Do(req.requests)
-	if err != nil {
+	if response, err := http.DefaultClient.Do(req.requests); err != nil {
 		fmt.Println(err)
-		return nil, err
+	} else {
+		return &Response{Response: response, Request: req, Body: response.Body}
 	}
-	return &Response{Response: response, Request: req}, nil
+	return nil
 }
 
-func (req *Request) Post(url_api string) (resp *Response, err error) {
+func Post(url_api string) (resp *Response, err error) {
+	req := &Request{}
 	req.requests, err = http.NewRequest("POST", url_api, nil)
 	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Headers()
@@ -67,7 +51,7 @@ func (req *Request) Post(url_api string) (resp *Response, err error) {
 }
 
 func (resp *Response) Content() []byte {
-	resp.content, _ = io.ReadAll(resp.Request.requests.Body)
+	resp.content, _ = io.ReadAll(resp.Body)
 	return resp.content
 }
 
