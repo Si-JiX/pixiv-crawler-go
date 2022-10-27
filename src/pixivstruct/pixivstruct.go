@@ -1,4 +1,4 @@
-package pixiv
+package pixivstruct
 
 type ErrorT struct {
 	Error struct {

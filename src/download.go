@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
+	"pixiv-cil/pkg/request"
 	"pixiv-cil/pkg/threadpool"
 	"pixiv-cil/src/app"
+	"pixiv-cil/src/pixivstruct"
 	"pixiv-cil/utils"
 	"strconv"
 )
@@ -63,23 +65,28 @@ func GET_USER_FOLLOWING(UserID int) {
 }
 
 func GET_RECOMMEND(next_url string) {
-	if recommended, err := app.App.Recommended(next_url, true); err != nil {
+	recommended, err := app.App.Recommended(next_url, true)
+	if err != nil {
 		fmt.Println("Request recommend fail,please check network", err)
-	} else {
-		for _, illust := range recommended.Illusts {
-			if illust.MetaSinglePage.OriginalImageURL == "" {
-				for _, img := range illust.MetaPages {
-					utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
-				}
-			} else {
-				utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
+		return
+	}
+	for _, illust := range recommended.Illusts {
+		if illust.MetaSinglePage.OriginalImageURL == "" {
+			for _, img := range illust.MetaPages {
+				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
 			}
+		} else {
+			utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
 		}
-		ThreadDownloadImages(utils.ImageUrlList)
-		if recommended.NextURL != "" {
-			//fmt.Println(recommended.NextURL)
-			GET_RECOMMEND(recommended.NextURL)
+	}
+	//ThreadDownloadImages(utils.ImageUrlList)
+	if recommended.NextURL != "" {
+		IllustRecommended := &pixivstruct.IllustRecommended{}
+		request.Get(recommended.NextURL, nil).Json(IllustRecommended) // Get the next page
+		for _, illust := range IllustRecommended.Illusts {
+			println(illust.Title)
 		}
+		return
 	}
 
 }

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"pixiv-cil/pkg/threadpool"
+	"pixiv-cil/src/pixivstruct"
 	"strings"
 	"time"
 
@@ -66,9 +67,9 @@ type userDetailParams struct {
 	Filter string `url:"filter,omitempty"`
 }
 
-func (a *AppPixivAPI) UserDetail(uid uint64) (*UserDetail, error) {
+func (a *AppPixivAPI) UserDetail(uid uint64) (*pixivstruct.UserDetail, error) {
 	params := &userDetailParams{UserID: uid, Filter: "for_ios"}
-	detail := &UserDetail{User: &User{}}
+	detail := &pixivstruct.UserDetail{User: &pixivstruct.User{}}
 	if err := a.request(USER_DETAIL, params, detail, true); err != nil {
 		return nil, err
 	}
@@ -83,14 +84,14 @@ type userIllustsParams struct {
 }
 
 // UserIllusts type: [illust, manga]
-func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]Illust, int, error) {
+func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]pixivstruct.Illust, int, error) {
 	params := &userIllustsParams{
 		UserID: uid,
 		Filter: "for_ios",
 		Type:   _type,
 		Offset: offset,
 	}
-	data := &IllustsResponse{}
+	data := &pixivstruct.IllustsResponse{}
 	if err := a.request(USER_AUTHOR, params, data, true); err != nil {
 		return nil, 0, err
 	}
@@ -107,7 +108,7 @@ type userBookmarkIllustsParams struct {
 }
 
 // UserBookmarksIllust restrict: [public, private]
-func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag string) ([]Illust, int, error) {
+func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag string) ([]pixivstruct.Illust, int, error) {
 	params := &userBookmarkIllustsParams{
 		UserID:        uid,
 		Restrict:      "public",
@@ -115,7 +116,7 @@ func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag str
 		MaxBookmarkID: maxBookmarkID,
 		Tag:           tag,
 	}
-	data := &IllustsResponse{}
+	data := &pixivstruct.IllustsResponse{}
 	if err := a.request(BOOKMARKS, params, data, true); err != nil {
 		return nil, 0, err
 	}
@@ -129,9 +130,9 @@ type illustFollowParams struct {
 }
 
 // IllustFollow restrict: [public, private]
-func (a *AppPixivAPI) IllustFollow(restrict string, offset int) ([]Illust, int, error) {
+func (a *AppPixivAPI) IllustFollow(restrict string, offset int) ([]pixivstruct.Illust, int, error) {
 	params := &illustFollowParams{Restrict: restrict, Offset: offset}
-	data := &IllustsResponse{}
+	data := &pixivstruct.IllustsResponse{}
 	if err := a.request(FOLLOW, params, data, true); err != nil {
 		return nil, 0, err
 	}
@@ -144,8 +145,8 @@ type illustDetailParams struct {
 }
 
 // IllustDetail get a detailed illust with id
-func (a *AppPixivAPI) IllustDetail(id int) (*Illust, error) {
-	data := &IllustResponse{}
+func (a *AppPixivAPI) IllustDetail(id int) (*pixivstruct.Illust, error) {
+	data := &pixivstruct.IllustResponse{}
 	params := &illustDetailParams{IllustID: id}
 	if err := a.request(DETAIL, params, data, true); err != nil {
 		return nil, err
@@ -227,8 +228,8 @@ type illustCommentsParams struct {
 }
 
 // IllustComments Comments posted in a pixiv artwork
-func (a *AppPixivAPI) IllustComments(illustID uint64, offset int, includeTotalComments bool) (*IllustComments, error) {
-	data := &IllustComments{}
+func (a *AppPixivAPI) IllustComments(illustID uint64, offset int, includeTotalComments bool) (*pixivstruct.IllustComments, error) {
+	data := &pixivstruct.IllustComments{}
 	params := &illustCommentsParams{
 		IllustID:             illustID,
 		IncludeTotalComments: includeTotalComments,
@@ -248,8 +249,8 @@ type illustCommentAddParams struct {
 }
 
 // IllustCommentAdd adds a comment to given illustID
-func (a *AppPixivAPI) IllustCommentAdd(illustID uint64, comment string, parentCommentID int) (*IllustCommentAddResult, error) {
-	data := &IllustCommentAddResult{}
+func (a *AppPixivAPI) IllustCommentAdd(illustID uint64, comment string, parentCommentID int) (*pixivstruct.IllustCommentAddResult, error) {
+	data := &pixivstruct.IllustCommentAddResult{}
 	params := &illustCommentAddParams{
 		IllustID:        illustID,
 		Comment:         comment,
@@ -268,8 +269,8 @@ type illustRelatedParams struct {
 }
 
 // IllustRelated returns Related works
-func (a *AppPixivAPI) IllustRelated(illustID uint64, filter string, seedIllustIDs []string) (*IllustsResponse, error) {
-	data := &IllustsResponse{}
+func (a *AppPixivAPI) IllustRelated(illustID uint64, filter string, seedIllustIDs []string) (*pixivstruct.IllustsResponse, error) {
+	data := &pixivstruct.IllustsResponse{}
 	if filter == "" {
 		filter = "for_ios"
 	}
@@ -303,8 +304,8 @@ type illustRecommendedParams struct {
 //
 // contentType: [illust, manga]
 
-func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*IllustRecommended, error) {
-	data := &IllustRecommended{}
+func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {
+	data := &pixivstruct.IllustRecommended{}
 	params := &illustRecommendedParams{IncludePrivacyPolicy: "true", IncludeRankingIllusts: true}
 	if url == "" {
 		if requireAuth {
@@ -322,8 +323,8 @@ func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*IllustRecommen
 	return data, nil
 }
 
-func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*IllustRecommended, error) {
-	data := &IllustRecommended{}
+func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {
+	data := &pixivstruct.IllustRecommended{}
 	params := &illustRecommendedParams{
 		ContentType:                  contentType,
 		IncludeRankingLabel:          includeRankingLabel,
@@ -359,8 +360,8 @@ type illustRankingParams struct {
 // mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
 //
 // date: yyyy-mm-dd
-func (a *AppPixivAPI) IllustRanking(mode string, filter string, date string, offset string) (*IllustsResponse, error) {
-	data := &IllustsResponse{}
+func (a *AppPixivAPI) IllustRanking(mode string, filter string, date string, offset string) (*pixivstruct.IllustsResponse, error) {
+	data := &pixivstruct.IllustsResponse{}
 	params := &illustRankingParams{
 		Mode:   mode,
 		Filter: filter,
@@ -378,8 +379,8 @@ type trendingTagsIllustParams struct {
 }
 
 // TrendingTagsIllust Trend label
-func (a *AppPixivAPI) TrendingTagsIllust(filter string) (*TrendingTagsIllust, error) {
-	data := &TrendingTagsIllust{}
+func (a *AppPixivAPI) TrendingTagsIllust(filter string) (*pixivstruct.TrendingTagsIllust, error) {
+	data := &pixivstruct.TrendingTagsIllust{}
 	params := &trendingTagsIllustParams{
 		Filter: filter,
 	}
@@ -409,8 +410,8 @@ type searchIllustParams struct {
 // sort: [date_desc, date_asc]
 //
 // duration: [within_last_day, within_last_week, within_last_month]
-func (a *AppPixivAPI) SearchIllust(word string, searchTarget string, sort string, duration string, filter string, offset int) (*SearchIllustResult, error) {
-	data := &SearchIllustResult{}
+func (a *AppPixivAPI) SearchIllust(word string, searchTarget string, sort string, duration string, filter string, offset int) (*pixivstruct.SearchIllustResult, error) {
+	data := &pixivstruct.SearchIllustResult{}
 	params := &searchIllustParams{
 		Word:         word,
 		SearchTarget: searchTarget,
@@ -430,8 +431,8 @@ type illustBookmarkDetailParams struct {
 }
 
 // IllustBookmarkDetail Bookmark details
-func (a *AppPixivAPI) IllustBookmarkDetail(illustID uint64) (*IllustBookmarkDetail, error) {
-	data := &IllustBookmarkDetail{}
+func (a *AppPixivAPI) IllustBookmarkDetail(illustID uint64) (*pixivstruct.IllustBookmarkDetail, error) {
+	data := &pixivstruct.IllustBookmarkDetail{}
 	params := &illustBookmarkDetailParams{
 		IllustID: illustID,
 	}
@@ -477,8 +478,8 @@ type userBookmarkTagsIllustParams struct {
 }
 
 // UserBookmarkTagsIllust User favorite tag list
-func (a *AppPixivAPI) UserBookmarkTagsIllust(restrict string, offset int) (*UserBookmarkTags, error) {
-	data := &UserBookmarkTags{}
+func (a *AppPixivAPI) UserBookmarkTagsIllust(restrict string, offset int) (*pixivstruct.UserBookmarkTags, error) {
+	data := &pixivstruct.UserBookmarkTags{}
 	params := &userBookmarkTagsIllustParams{
 		Restrict: restrict,
 		Offset:   offset,
@@ -495,8 +496,8 @@ type userFollowStatsParams struct {
 	Offset   int    `url:"offset,omitempty"`
 }
 
-func userFollowStats(a *AppPixivAPI, urlEnd string, userID int, restrict string, offset int) (*UserFollowList, error) {
-	data := &UserFollowList{}
+func userFollowStats(a *AppPixivAPI, urlEnd string, userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
+	data := &pixivstruct.UserFollowList{}
 	params := &userFollowStatsParams{
 		UserID:   userID,
 		Restrict: restrict,
@@ -509,12 +510,12 @@ func userFollowStats(a *AppPixivAPI, urlEnd string, userID int, restrict string,
 }
 
 // UserFollowing Following user list
-func (a *AppPixivAPI) UserFollowing(userID int, restrict string, offset int) (*UserFollowList, error) {
+func (a *AppPixivAPI) UserFollowing(userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
 	return userFollowStats(a, "following", userID, restrict, offset)
 }
 
 // UserFollower Follower user list
-func (a *AppPixivAPI) UserFollower(userID int, restrict string, offset int) (*UserFollowList, error) {
+func (a *AppPixivAPI) UserFollower(userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
 	return userFollowStats(a, "follower", userID, restrict, offset)
 }
 
@@ -547,8 +548,8 @@ type userMyPixivParams struct {
 }
 
 // UserMyPixiv Users in MyPixiv
-func (a *AppPixivAPI) UserMyPixiv(userID uint64, offset int) (*UserFollowList, error) {
-	data := &UserFollowList{}
+func (a *AppPixivAPI) UserMyPixiv(userID uint64, offset int) (*pixivstruct.UserFollowList, error) {
+	data := &pixivstruct.UserFollowList{}
 	params := &userMyPixivParams{
 		UserID: userID,
 		Offset: offset,
@@ -566,8 +567,8 @@ type userListParams struct {
 }
 
 // UserList Blacklisted users
-func (a *AppPixivAPI) UserList(userID uint64, filter string, offset int) (*UserList, error) {
-	data := &UserList{}
+func (a *AppPixivAPI) UserList(userID uint64, filter string, offset int) (*pixivstruct.UserList, error) {
+	data := &pixivstruct.UserList{}
 	params := &userListParams{
 		UserID: userID,
 		Filter: filter,
@@ -584,8 +585,8 @@ type ugoiraMetadataParams struct {
 }
 
 // UgoiraMetadata Ugoira Info
-func (a *AppPixivAPI) UgoiraMetadata(illustID uint64) (*UgoiraMetadata, error) {
-	data := &UgoiraMetadata{}
+func (a *AppPixivAPI) UgoiraMetadata(illustID uint64) (*pixivstruct.UgoiraMetadata, error) {
+	data := &pixivstruct.UgoiraMetadata{}
 	params := &ugoiraMetadataParams{IllustID: illustID}
 	if err := a.request(METADATA, params, data, true); err != nil {
 		return nil, err
@@ -598,8 +599,8 @@ type showcaseArticleParams struct {
 }
 
 // ShowcaseArticle Special feature details (disguised as Chrome)
-func (a *AppPixivAPI) ShowcaseArticle(showcaseID string) (*ShowcaseArticle, error) {
-	data := &ShowcaseArticle{}
+func (a *AppPixivAPI) ShowcaseArticle(showcaseID string) (*pixivstruct.ShowcaseArticle, error) {
+	data := &pixivstruct.ShowcaseArticle{}
 	params := &showcaseArticleParams{
 		ShowcaseID: showcaseID,
 	}

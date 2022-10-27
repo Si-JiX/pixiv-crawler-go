@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os/exec"
 	"pixiv-cil/pkg/input"
+	"pixiv-cil/src/pixivstruct"
 	"runtime"
 	"strings"
 )
@@ -51,7 +52,7 @@ func getLoginURL() (string, string) {
 	return codeVerifier, "https://app-api.pixiv.net/web/v1/login" + "?" + urlValues.Encode()
 }
 
-func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
+func loginPixiv(codeVerifier, code string) (*pixivstruct.AccessToken, error) {
 	urlValues := url.Values{
 		"client_id":      {"MOBrBDS8blbauoSck0ZfDbtuzpyT"},
 		"client_secret":  {"lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"},
@@ -81,7 +82,7 @@ func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
 	if err != nil {
 		return nil, err
 	}
-	var accessToken *AccessToken
+	var accessToken *pixivstruct.AccessToken
 	if err = json.Unmarshal(all, &accessToken); err != nil {
 		return nil, err
 	} else {
@@ -103,7 +104,7 @@ func openbrowser(url string) error {
 	}
 	return err
 }
-func ChromeDriverLogin() (*AccessToken, error) {
+func ChromeDriverLogin() (*pixivstruct.AccessToken, error) {
 	codeVerifier, loginURL := getLoginURL() // Get the login URL and code verifier
 	fmt.Println("please open the following link in your browser:", loginURL)
 	fmt.Println("please press f12 to open the developer console, and switch to the network tab.")
