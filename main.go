@@ -47,13 +47,10 @@ func main() {
 		} else if arguments.CommandLines.Recommend {
 			src.GET_RECOMMEND("")
 		} else {
-			if len(os.Args) == 1 {
+			if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
 				_ = cli.ShowAppHelp(c)
-			} else {
-				if os.Args[1] == "-h" || os.Args[1] == "--help" {
-					_ = cli.ShowAppHelp(c)
-				}
 			}
+
 		}
 		return nil
 	}
