@@ -9,7 +9,6 @@ import (
 )
 
 type Request struct {
-	Header   map[string]string
 	requests *http.Request
 	Params   url.Values
 }

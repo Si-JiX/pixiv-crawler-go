@@ -1,5 +1,14 @@
 package pixiv
 
+type ErrorT struct {
+	Error struct {
+		UserMessage        string `json:"user_message"`
+		Message            string `json:"message"`
+		Reason             string `json:"reason"`
+		UserMessageDetails struct {
+		} `json:"user_message_details"`
+	} `json:"error"`
+}
 type UserImages struct {
 	Medium string `json:"medium"`
 }
