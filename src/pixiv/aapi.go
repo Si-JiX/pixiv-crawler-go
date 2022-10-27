@@ -305,10 +305,7 @@ type illustRecommendedParams struct {
 
 func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*IllustRecommended, error) {
 	data := &IllustRecommended{}
-	params := &illustRecommendedParams{
-		IncludePrivacyPolicy:  "true",
-		IncludeRankingIllusts: true,
-	}
+	params := &illustRecommendedParams{IncludePrivacyPolicy: "true", IncludeRankingIllusts: true}
 	if url == "" {
 		if requireAuth {
 			url = RECOMMENDED
