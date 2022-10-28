@@ -237,29 +237,16 @@ func (a *AppPixivAPI) IllustRelated(illustID uint64, filter string, seedIllustID
 	return data, nil
 }
 
-type illustRecommendedParams struct {
-	ContentType                  string   `url:"content_type,omitempty"`
-	IncludeRankingLabel          bool     `url:"include_ranking_label,omitempty"`
-	Filter                       string   `url:"filter,omitempty"`
-	MaxBookmarkIDForRecommended  string   `url:"max_bookmark_id_for_recommend,omitempty"`
-	MinBookmarkIDForRecentIllust string   `url:"min_bookmark_id_for_recent_illust,omitempty"`
-	Offset                       int      `url:"offset,omitempty"`
-	IncludeRankingIllusts        bool     `url:"include_ranking_illusts,omitempty"`
-	BookmarkIllustIDs            []string `url:"bookmark_illust_ids,omitempty"`
-	IncludePrivacyPolicy         string   `url:"include_privacy_policy,omitempty"`
-}
-
 // IllustRecommended Home Recommendation
-//
 // contentType: [illust, manga]
 
 func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {
 	params := map[string]string{"include_privacy_policy": "true", "include_ranking_illusts": "true"}
 	if url == "" {
 		if requireAuth {
-			url = RECOMMENDED
+			url = RECOMMENDED // auth required
 		} else {
-			url = RECOMMENDED_NO_LOGIN
+			url = RECOMMENDED_NO_LOGIN // no auth required
 		}
 	} else {
 		url = strings.ReplaceAll(url, API_BASE, "")
@@ -270,31 +257,6 @@ func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.Il
 		return nil, errors.New(response.Error.Message)
 	}
 	return response, nil
-}
-
-func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {
-	data := &pixivstruct.IllustRecommended{}
-	params := &illustRecommendedParams{
-		ContentType:                  contentType,
-		IncludeRankingLabel:          includeRankingLabel,
-		Filter:                       filter,
-		Offset:                       offset,
-		BookmarkIllustIDs:            bookmarkIllustIDs,
-		IncludePrivacyPolicy:         includePrivacyPolicy,
-		IncludeRankingIllusts:        includeRankingIllusts,
-		MaxBookmarkIDForRecommended:  maxBookmarkIDForRecommended,
-		MinBookmarkIDForRecentIllust: minBookmarkIDForRecentIllust,
-	}
-	if requireAuth {
-		if err := a.request(RECOMMENDED, params, data, true); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := a.request(RECOMMENDED_NO_LOGIN, params, data, true); err != nil {
-			return nil, err
-		}
-	}
-	return data, nil
 }
 
 type illustRankingParams struct {
