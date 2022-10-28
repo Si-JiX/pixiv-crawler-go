@@ -10,20 +10,20 @@ import (
 )
 
 type Request struct {
-	Path     string
-	Mode     string
-	Header   map[string]string
-	Query    map[string]string
-	Params   url.Values
-	requests *http.Request
+	Path     string            // API Path
+	Mode     string            // GET, POST, PUT
+	Header   map[string]string // Request Header
+	Query    map[string]string // Query Params
+	Params   url.Values        // init in url.Values
+	requests *http.Request     // init in http.NewRequest
 }
 
 type Response struct {
-	Response *http.Response
-	Request  *Request
-	Body     io.ReadCloser
-	content  []byte
-	text     string
+	Response *http.Response // Response from http.DefaultClient.Do
+	Request  *Request       // Request from type Request
+	Body     io.ReadCloser  // Body from Response
+	content  []byte         // Body -> Content []byte
+	text     string         // Content -> string
 }
 
 func Get(url_api string, params map[string]string) *Response {

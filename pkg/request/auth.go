@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"math/rand"
 	"net/url"
 	"os/exec"
@@ -80,23 +81,21 @@ func get_pixiv_login_url() (string, string) {
 	return codeVerifier, "https://app-api.pixiv.net/web/v1/login" + "?" + urlValues.Encode()
 }
 
-func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
+func loginPixiv(Verifier string, code string) (*AccessToken, error) {
 	params := map[string]string{
 		"client_id":      "MOBrBDS8blbauoSck0ZfDbtuzpyT",
 		"client_secret":  "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
 		"code":           code,
-		"code_verifier":  codeVerifier,
+		"code_verifier":  Verifier,
 		"grant_type":     "authorization_code",
 		"include_policy": "true",
 		"redirect_uri":   "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback",
 	}
-	accessToken := &AccessToken{}
-	response := Post("https://oauth.secure.pixiv.net/auth/token", params)
-	response.Json(accessToken)
-	if accessToken.AccessToken == "" {
-		return nil, fmt.Errorf("login error %s", response.Text())
+	response := Post("https://oauth.secure.pixiv.net/auth/token", params).Json(&AccessToken{}).(*AccessToken)
+	if response.AccessToken == "" {
+		return nil, fmt.Errorf("login login pixiv error: %s", response.Error)
 	} else {
-		return accessToken, nil
+		return response, nil
 	}
 }
 
@@ -131,11 +130,12 @@ func ChromeDriverLogin() (*AccessToken, error) {
 }
 
 type AccessToken struct {
-	AccessToken  string `json:"access_token"`
-	ExpiresIn    int    `json:"expires_in"`
-	TokenType    string `json:"token_type"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
+	Error        pixivstruct.Error `json:"error"`
+	AccessToken  string            `json:"access_token"`
+	ExpiresIn    int               `json:"expires_in"`
+	TokenType    string            `json:"token_type"`
+	Scope        string            `json:"scope"`
+	RefreshToken string            `json:"refresh_token"`
 	User         struct {
 		ProfileImageUrls struct {
 			Px16X16   string `json:"px_16x16"`

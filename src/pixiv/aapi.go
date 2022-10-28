@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixivstruct"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"net/http"
 	"net/url"
 	"path/filepath"

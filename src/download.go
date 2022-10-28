@@ -7,8 +7,8 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixivstruct"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"strconv"
 )
 
