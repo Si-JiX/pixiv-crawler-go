@@ -6,7 +6,7 @@ import (
 )
 
 func (req *Request) QueryData() io.ReadCloser {
-	return io.NopCloser(strings.NewReader(req.EncodeParams()))
+	return io.NopCloser(strings.NewReader(req.EncodeParams(req.Query)))
 }
 
 func (req *Request) AddParams(key, value string) *Request {

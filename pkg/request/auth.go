@@ -81,22 +81,17 @@ func get_pixiv_login_url() (string, string) {
 }
 
 func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
-	req := &Request{
-		Mode:   "POST",
-		Params: url.Values{},
-		Header: map[string]string{},
-		Path:   "https://oauth.secure.pixiv.net/auth/token",
+	params := map[string]string{
+		"client_id":      "MOBrBDS8blbauoSck0ZfDbtuzpyT",
+		"client_secret":  "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
+		"code":           code,
+		"code_verifier":  codeVerifier,
+		"grant_type":     "authorization_code",
+		"include_policy": "true",
+		"redirect_uri":   "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback",
 	}
-	req.AddParams("client_id", "MOBrBDS8blbauoSck0ZfDbtuzpyT")
-	req.AddParams("client_secret", "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj")
-	req.AddParams("code", code)
-	req.AddParams("code_verifier", codeVerifier)
-	req.AddParams("grant_type", "authorization_code")
-	req.AddParams("include_policy", "true")
-	req.AddParams("redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback")
-
 	accessToken := &AccessToken{}
-	response := Post(req)
+	response := Post("https://oauth.secure.pixiv.net/auth/token", params)
 	response.Json(accessToken)
 	if accessToken.AccessToken == "" {
 		return nil, fmt.Errorf("login error %s", response.Text())

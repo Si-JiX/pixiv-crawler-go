@@ -27,9 +27,9 @@ type Response struct {
 }
 
 func Get(url_api string, params map[string]string) *Response {
-	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api}
+	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
 	if params != nil {
-		req.Path = req.Path + "?" + req.EncodeParams(params)
+		req.Path = req.Path + "?" + req.EncodeParams(req.Query)
 	}
 	req.requests, _ = http.NewRequest("GET", req.Path, nil)
 	req.Headers()
@@ -41,7 +41,8 @@ func Get(url_api string, params map[string]string) *Response {
 	return nil
 }
 
-func Post(req *Request) *Response {
+func Post(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
 	req.requests, _ = http.NewRequest(req.Mode, req.Path, req.QueryData())
 	req.Headers()
 	if response, err := http.DefaultClient.Do(req.requests); err != nil {
