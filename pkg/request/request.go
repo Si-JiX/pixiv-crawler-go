@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Request struct {
@@ -92,9 +93,9 @@ func (resp *Response) Json(value interface{}) interface{} {
 	resp.Content() //	Init resp.content
 	if strings.Contains("OAuth", string(resp.content)) {
 		fmt.Println("Token expired, Refreshing...")
-		//RefreshAuth()
+		RefreshAuth()
+		time.Sleep(2 * time.Second)
 	}
-	//RefreshAuth()
 	if err := json.Unmarshal(resp.content, value); err != nil {
 		fmt.Println("json.Unmarshal error:", err)
 	}

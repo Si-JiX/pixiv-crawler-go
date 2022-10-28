@@ -43,7 +43,7 @@ func main() {
 		} else if arguments.CommandLines.Following {
 			src.GET_USER_FOLLOWING(arguments.CommandLines.UserID)
 		} else if arguments.CommandLines.Recommend {
-			src.GET_RECOMMEND("")
+			src.GET_RECOMMEND("", true)
 		} else {
 			if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
 				_ = cli.ShowAppHelp(c)

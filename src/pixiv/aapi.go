@@ -254,8 +254,7 @@ type illustRecommendedParams struct {
 // contentType: [illust, manga]
 
 func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {
-	data := &pixivstruct.IllustRecommended{}
-	params := &illustRecommendedParams{IncludePrivacyPolicy: "true", IncludeRankingIllusts: true}
+	params := map[string]string{"include_privacy_policy": "true", "include_ranking_illusts": "true"}
 	if url == "" {
 		if requireAuth {
 			url = RECOMMENDED
@@ -266,10 +265,11 @@ func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.Il
 		url = strings.ReplaceAll(url, API_BASE, "")
 		params = nil
 	}
-	if err := a.request(url, params, data, true); err != nil {
-		return nil, err
+	response := request.Get(API_BASE+url, params).Json(&pixivstruct.IllustRecommended{}).(*pixivstruct.IllustRecommended)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
 	}
-	return data, nil
+	return response, nil
 }
 
 func (a *AppPixivAPI) IllustRecommended(contentType string, includeRankingLabel bool, filter string, maxBookmarkIDForRecommended string, minBookmarkIDForRecentIllust string, offset int, includeRankingIllusts bool, bookmarkIllustIDs []string, includePrivacyPolicy string, requireAuth bool) (*pixivstruct.IllustRecommended, error) {

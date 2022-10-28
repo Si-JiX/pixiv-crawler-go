@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
@@ -64,10 +63,10 @@ func GET_USER_FOLLOWING(UserID int) {
 
 }
 
-func GET_RECOMMEND(next_url string) {
-	recommended, err := app.App.Recommended(next_url, true)
+func GET_RECOMMEND(next_url string, auth bool) {
+	recommended, err := app.App.Recommended(next_url, auth)
 	if err != nil {
-		fmt.Println("Request recommend fail,please check network", err)
+		fmt.Println(err)
 		return
 	}
 	for _, illust := range recommended.Illusts {
@@ -79,15 +78,11 @@ func GET_RECOMMEND(next_url string) {
 			utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
 		}
 	}
-	//ThreadDownloadImages(utils.ImageUrlList)
+	ThreadDownloadImages(utils.ImageUrlList)
+	utils.ImageUrlList = nil
 	if recommended.NextURL != "" {
 		IllustRecommended := &pixivstruct.IllustRecommended{}
-		request.Get(recommended.NextURL, nil).Json(IllustRecommended) // Get the next page
-		fmt.Println(IllustRecommended.Error)
-		for _, illust := range IllustRecommended.Illusts {
-			println(illust.Title)
-		}
-		return
+		GET_RECOMMEND(IllustRecommended.NextURL, auth)
 	}
 
 }
