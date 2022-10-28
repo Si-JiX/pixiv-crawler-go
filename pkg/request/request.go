@@ -80,6 +80,11 @@ func (req *Request) NewRequest() *Response {
 }
 func (resp *Response) Content() []byte {
 	resp.content, _ = io.ReadAll(resp.Body)
+	if strings.Contains(string(resp.content), "Token") {
+		fmt.Println("Token expired, Refreshing...")
+		RefreshAuth()
+		time.Sleep(2 * time.Second)
+	}
 	return resp.content
 }
 
@@ -91,11 +96,6 @@ func (resp *Response) Text() string {
 
 func (resp *Response) Json(value interface{}) interface{} {
 	resp.Content() //	Init resp.content
-	if strings.Contains("OAuth", string(resp.content)) {
-		fmt.Println("Token expired, Refreshing...")
-		RefreshAuth()
-		time.Sleep(2 * time.Second)
-	}
 	if err := json.Unmarshal(resp.content, value); err != nil {
 		fmt.Println("json.Unmarshal error:", err)
 	}

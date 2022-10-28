@@ -9,6 +9,7 @@ var CommandLines = struct {
 	UserID    int
 	Following bool
 	Recommend bool
+	Ranking   bool
 	AuthorID  int
 	Name      string
 	URL       string
@@ -26,6 +27,12 @@ var CommandLineFlag = []cli.Flag{
 		Value:       "",
 		Usage:       "input pixiv url to download",
 		Destination: &CommandLines.URL,
+	},
+	cli.IntFlag{
+		Name:        "a, author",
+		Value:       0,
+		Usage:       "author id",
+		Destination: &CommandLines.AuthorID,
 	},
 	cli.IntFlag{
 		Name:        "user, userid",
@@ -49,10 +56,9 @@ var CommandLineFlag = []cli.Flag{
 		Usage:       "recommend illust",
 		Destination: &CommandLines.Recommend,
 	},
-	cli.IntFlag{
-		Name:        "a, author",
-		Value:       0,
-		Usage:       "author id",
-		Destination: &CommandLines.AuthorID,
+	cli.BoolFlag{
+		Name:        "rk, ranking",
+		Usage:       "ranking illust",
+		Destination: &CommandLines.Ranking,
 	},
 }
