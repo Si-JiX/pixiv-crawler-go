@@ -2,7 +2,7 @@ package threadpool
 
 import (
 	"fmt"
-	"pixiv-cil/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"sync"
 )
 

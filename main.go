@@ -1,16 +1,16 @@
 package main
 
 import (
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/arguments"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"pixiv-cil/pkg/arguments"
-	"pixiv-cil/pkg/config"
-	"pixiv-cil/pkg/file"
-	"pixiv-cil/pkg/request"
-	"pixiv-cil/src"
-	"pixiv-cil/src/pixiv"
-	"pixiv-cil/utils"
 )
 
 func init() {

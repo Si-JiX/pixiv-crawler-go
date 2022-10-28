@@ -1,4 +1,4 @@
-module pixiv-cil
+module github.com/VeronicaAlexia/pixiv-crawler-go
 
 go 1.19
 

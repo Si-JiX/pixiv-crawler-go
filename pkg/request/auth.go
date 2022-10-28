@@ -4,10 +4,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
 	"math/rand"
 	"net/url"
 	"os/exec"
-	"pixiv-cil/pkg/input"
 	"runtime"
 	"strings"
 )
@@ -81,17 +81,6 @@ func get_pixiv_login_url() (string, string) {
 }
 
 func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
-	//urlValues := url.Values{
-	//	"client_id":      {"MOBrBDS8blbauoSck0ZfDbtuzpyT"},
-	//	"client_secret":  {"lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"},
-	//	"code":           {code},
-	//	"code_verifier":  {codeVerifier},
-	//	"grant_type":     {"authorization_code"},
-	//	"include_policy": {"true"},
-	//	"redirect_uri":   {"https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"},
-	//}
-	//req, err := http.NewRequest("POST", "https://oauth.secure.pixiv.net/auth/token", strings.NewReader(urlValues.Encode()))
-
 	req := &Request{Params: url.Values{}, Header: map[string]string{}}
 	req.AddParams("client_id", "MOBrBDS8blbauoSck0ZfDbtuzpyT")
 	req.AddParams("client_secret", "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj")

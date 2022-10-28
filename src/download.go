@@ -2,13 +2,13 @@ package src
 
 import (
 	"fmt"
-	"pixiv-cil/pkg/config"
-	"pixiv-cil/pkg/file"
-	"pixiv-cil/pkg/request"
-	"pixiv-cil/pkg/threadpool"
-	"pixiv-cil/src/app"
-	"pixiv-cil/src/pixivstruct"
-	"pixiv-cil/utils"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixivstruct"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"strconv"
 )
 

@@ -1,5 +1,5 @@
 package app
 
-import "pixiv-cil/src/pixiv"
+import "github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
 
 var App = pixiv.NewApp()

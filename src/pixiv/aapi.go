@@ -2,12 +2,12 @@ package pixiv
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixivstruct"
 	"net/http"
 	"net/url"
 	"path/filepath"
-	"pixiv-cil/pkg/config"
-	"pixiv-cil/pkg/threadpool"
-	"pixiv-cil/src/pixivstruct"
 	"strings"
 	"time"
 
