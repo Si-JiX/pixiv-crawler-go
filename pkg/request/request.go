@@ -26,6 +26,20 @@ type Response struct {
 	text     string
 }
 
+func Get(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	return req.NewRequest()
+}
+
+func Post(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	return req.NewRequest()
+}
+func Put(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "PUT", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	return req.NewRequest()
+}
+
 func (req *Request) NewRequest() *Response {
 	var err error
 	var body io.ReadCloser
@@ -48,17 +62,6 @@ func (req *Request) NewRequest() *Response {
 		return &Response{Response: response, Request: req, Body: response.Body}
 	}
 }
-
-func Get(url_api string, params map[string]string) *Response {
-	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	return req.NewRequest()
-}
-
-func Post(url_api string, params map[string]string) *Response {
-	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	return req.NewRequest()
-}
-
 func (resp *Response) Content() []byte {
 	resp.content, _ = io.ReadAll(resp.Body)
 	return resp.content
