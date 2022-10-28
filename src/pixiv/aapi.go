@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/threadpool"
 	"pixiv-cil/src/pixivstruct"
 	"strings"
@@ -29,7 +30,7 @@ func NewApp() *AppPixivAPI {
 func (a *AppPixivAPI) request(path string, params, data interface{}, auth bool) (err error) {
 	var res *http.Response
 	if auth {
-		res, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+TokenVariable).QueryStruct(params).ReceiveSuccess(data)
+		res, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+config.Vars.PixivToken).QueryStruct(params).ReceiveSuccess(data)
 		if res.StatusCode == 400 {
 			if !RefreshAuth() {
 				return errors.New("refresh token failed")
@@ -55,7 +56,7 @@ func (a *AppPixivAPI) WithDownloadProxy(proxy *url.URL) *AppPixivAPI {
 
 func (a *AppPixivAPI) post(path string, params, data interface{}, auth bool) (err error) {
 	if auth {
-		_, err = a.sling.New().Post(path).Set("Authorization", "Bearer "+TokenVariable).BodyForm(params).ReceiveSuccess(data)
+		_, err = a.sling.New().Post(path).Set("Authorization", "Bearer "+config.Vars.PixivToken).BodyForm(params).ReceiveSuccess(data)
 	} else {
 		_, err = a.sling.New().Post(path).BodyForm(params).ReceiveSuccess(data)
 	}

@@ -7,6 +7,7 @@ import (
 	"pixiv-cil/pkg/arguments"
 	"pixiv-cil/pkg/config"
 	"pixiv-cil/pkg/file"
+	"pixiv-cil/pkg/request"
 	"pixiv-cil/src"
 	"pixiv-cil/src/pixiv"
 	"pixiv-cil/utils"
@@ -15,7 +16,7 @@ import (
 func init() {
 	config.VarsConfigInit()
 	if config.Vars.PixivRefreshToken == "" {
-		if accessToken, err := pixiv.ChromeDriverLogin(); err != nil {
+		if accessToken, err := request.ChromeDriverLogin(); err != nil {
 			panic(err)
 		} else {
 			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", accessToken.RefreshToken)

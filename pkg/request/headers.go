@@ -18,11 +18,14 @@ func (req *Request) Headers() {
 	for k, v := range req.Header {
 		req.requests.Header.Set(k, v)
 	}
-	if config.Vars.PixivToken != "" {
-		req.AddHeader("Authorization", "Bearer "+config.Vars.PixivToken)
-	} else {
-		fmt.Println("token is empty!")
-	}
+	fmt.Println(config.Vars.PixivToken)
+	fmt.Println(req.Path)
+	req.AddHeader("Authorization", "Bearer "+config.Vars.PixivToken)
+	//if config.Vars.PixivToken != "" {
+	//	req.AddHeader("Authorization", "Bearer "+config.Vars.PixivToken)
+	//} else {
+	//	fmt.Println("token is empty!")
+	//}
 	// Set headers for request
 	//for key, value := range req.Header {
 	//	req.requests.Header.Set(key, value)

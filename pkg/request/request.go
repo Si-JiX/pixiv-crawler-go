@@ -10,6 +10,7 @@ import (
 )
 
 type Request struct {
+	Path     string
 	requests *http.Request
 	Header   map[string]string
 	Params   url.Values
@@ -24,7 +25,7 @@ type Response struct {
 }
 
 func Get(url_api string, params map[string]string) *Response {
-	req := &Request{Params: url.Values{}, Header: map[string]string{}}
+	req := &Request{Params: url.Values{}, Header: map[string]string{}, Path: url_api}
 	if params != nil {
 		url_api = url_api + "?" + req.EncodeParams(params)
 	}
@@ -39,7 +40,7 @@ func Get(url_api string, params map[string]string) *Response {
 }
 
 func Post(url_api string, req *Request) *Response {
-	req.requests, _ = http.NewRequest("POST", url_api, nil)
+	req.requests, _ = http.NewRequest("POST", url_api, req.QueryData())
 	req.Headers()
 	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	//fmt.Println(req.requests.Header)

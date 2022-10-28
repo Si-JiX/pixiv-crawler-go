@@ -83,6 +83,7 @@ func GET_RECOMMEND(next_url string) {
 	if recommended.NextURL != "" {
 		IllustRecommended := &pixivstruct.IllustRecommended{}
 		request.Get(recommended.NextURL, nil).Json(IllustRecommended) // Get the next page
+		fmt.Println(IllustRecommended.Error)
 		for _, illust := range IllustRecommended.Illusts {
 			println(illust.Title)
 		}
