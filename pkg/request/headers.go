@@ -15,6 +15,11 @@ func (req *Request) Headers() {
 	req.AddHeader("App-OS-VERSION", "12.2")
 	req.AddHeader("App-Version", "7.6.2")
 	req.AddHeader("Authorization", "Bearer "+config.Vars.PixivToken)
+	if req.Mode == "POST" {
+		req.AddHeader("Content-Type", "application/x-www-form-urlencoded")
+	} else {
+		req.AddHeader("Content-Type", "application/json")
+	}
 	for k, v := range req.Header {
 		req.requests.Header.Set(k, v)
 	}

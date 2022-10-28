@@ -12,9 +12,10 @@ import (
 type Request struct {
 	Path     string
 	Mode     string
-	requests *http.Request
 	Header   map[string]string
+	Query    map[string]string
 	Params   url.Values
+	requests *http.Request
 }
 
 type Response struct {
@@ -43,7 +44,6 @@ func Get(url_api string, params map[string]string) *Response {
 func Post(req *Request) *Response {
 	req.requests, _ = http.NewRequest(req.Mode, req.Path, req.QueryData())
 	req.Headers()
-	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if response, err := http.DefaultClient.Do(req.requests); err != nil {
 		return nil
 	} else {
