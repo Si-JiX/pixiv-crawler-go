@@ -150,53 +150,6 @@ func (a *AppPixivAPI) IllustDetail(id int) (*pixivstruct.Illust, error) {
 	return &data.Illust, nil
 }
 
-// Download a specific picture from pixiv id
-func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
-	illust, err := a.IllustDetail(id)
-	if err != nil {
-		err = errors.Wrapf(err, "illust %d detail error", id)
-		return
-	}
-	if illust == nil {
-		err = errors.Wrapf(err, "illust %d is nil", id)
-		return
-	}
-	if illust.MetaSinglePage == nil {
-		err = errors.Wrapf(err, "illust %d has no single page", id)
-		return
-	}
-
-	var urls []string
-	if illust.MetaSinglePage.OriginalImageURL == "" {
-		for _, img := range illust.MetaPages {
-			urls = append(urls, img.Images.Original)
-		}
-	} else {
-		urls = append(urls, illust.MetaSinglePage.OriginalImageURL)
-	}
-
-	dclient := &http.Client{}
-	if a.proxy != nil {
-		dclient.Transport = &http.Transport{
-			Proxy: http.ProxyURL(a.proxy),
-		}
-	}
-	if a.timeout != 0 {
-		dclient.Timeout = a.timeout
-	}
-
-	for _, u := range urls {
-		size, e := download(dclient, u, path, filepath.Base(u))
-		if e != nil {
-			err = errors.Wrapf(e, "download url %s failed", u)
-			return
-		}
-		sizes = append(sizes, size)
-	}
-
-	return
-}
-
 func (a *AppPixivAPI) ThreadDownloadImage(url string) {
 	defer threadpool.Threading.Done()
 	dclient := &http.Client{}
@@ -486,33 +439,27 @@ func (a *AppPixivAPI) UserBookmarkTagsIllust(restrict string, offset int) (*pixi
 	return data, nil
 }
 
-type userFollowStatsParams struct {
-	UserID   int    `url:"user_id,omitempty"`
-	Restrict string `url:"restrict,omitempty"`
-	Offset   int    `url:"offset,omitempty"`
-}
-
-func userFollowStats(a *AppPixivAPI, urlEnd string, userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
-	data := &pixivstruct.UserFollowList{}
-	params := &userFollowStatsParams{
-		UserID:   userID,
-		Restrict: restrict,
-		Offset:   offset,
+func userFollowStats(urlEnd string, userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
+	params := map[string]string{
+		"user_id":  strconv.Itoa(userID),
+		"restrict": restrict,
+		"offset":   strconv.Itoa(offset),
 	}
-	if err := a.request(USER+urlEnd, params, data, true); err != nil {
-		return nil, err
+	response := request.Get(API_BASE+USER+urlEnd, params).Json(&pixivstruct.UserFollowList{}).(*pixivstruct.UserFollowList)
+	if response.Error.UserMessage != "" {
+		return nil, errors.New(response.Error.UserMessage)
 	}
-	return data, nil
+	return response, nil
 }
 
 // UserFollowing Following user list
 func (a *AppPixivAPI) UserFollowing(userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
-	return userFollowStats(a, "following", userID, restrict, offset)
+	return userFollowStats("following", userID, restrict, offset)
 }
 
 // UserFollower Follower user list
 func (a *AppPixivAPI) UserFollower(userID int, restrict string, offset int) (*pixivstruct.UserFollowList, error) {
-	return userFollowStats(a, "follower", userID, restrict, offset)
+	return userFollowStats("follower", userID, restrict, offset)
 }
 
 type userFollowPostParams struct {

@@ -205,6 +205,7 @@ type UserBookmarkTags struct {
 }
 
 type UserFollowList struct {
+	Error        Error         `json:"error"`
 	UserPreviews []UserPreview `json:"user_previews"`
 	NextURL      string        `json:"next_url"`
 }
