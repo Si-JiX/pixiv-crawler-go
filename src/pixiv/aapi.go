@@ -34,7 +34,7 @@ func (a *AppPixivAPI) request(path string, params, data interface{}, auth bool) 
 	if auth {
 		res, err = a.sling.New().Get(path).Set("Authorization", "Bearer "+config.Vars.PixivToken).QueryStruct(params).ReceiveSuccess(data)
 		if res.StatusCode == 400 {
-			if !RefreshAuth() {
+			if !request.RefreshAuth() {
 				return errors.New("refresh token failed")
 			} else {
 				return a.request(path, params, data, auth)

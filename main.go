@@ -6,7 +6,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"gopkg.in/urfave/cli.v1"
 	"log"
@@ -25,8 +24,6 @@ func init() {
 			config.VarsFile.SaveConfig()
 		}
 	}
-	pixiv.TokenVariable = config.Vars.PixivToken
-	pixiv.RefreshTokenVariable = config.Vars.PixivRefreshToken
 }
 
 func main() {
