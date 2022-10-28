@@ -26,30 +26,37 @@ type Response struct {
 	text     string
 }
 
-func Get(url_api string, params map[string]string) *Response {
-	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	if params != nil {
+func (req *Request) NewRequest() *Response {
+	var err error
+	var body io.ReadCloser
+	var response *http.Response
+	if req.Mode == "POST" && req.Query != nil {
+		body = req.QueryData()
+	} else if req.Mode == "GET" && req.Query != nil {
 		req.Path = req.Path + "?" + req.EncodeParams(req.Query)
 	}
-	req.requests, _ = http.NewRequest("GET", req.Path, nil)
-	req.Headers()
-	if response, err := http.DefaultClient.Do(req.requests); err != nil {
-		fmt.Println(err)
-	} else {
-		return &Response{Response: response, Request: req, Body: response.Body}
+	req.requests, err = http.NewRequest(req.Mode, req.Path, body)
+	if err != nil {
+		fmt.Println("http.NewRequest error:", err)
+		return nil
 	}
-	return nil
-}
-
-func Post(url_api string, params map[string]string) *Response {
-	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	req.requests, _ = http.NewRequest(req.Mode, req.Path, req.QueryData())
 	req.Headers()
-	if response, err := http.DefaultClient.Do(req.requests); err != nil {
+	if response, err = http.DefaultClient.Do(req.requests); err != nil {
+		fmt.Println("http.DefaultClient.Do error:", err)
 		return nil
 	} else {
 		return &Response{Response: response, Request: req, Body: response.Body}
 	}
+}
+
+func Get(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	return req.NewRequest()
+}
+
+func Post(url_api string, params map[string]string) *Response {
+	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	return req.NewRequest()
 }
 
 func (resp *Response) Content() []byte {
