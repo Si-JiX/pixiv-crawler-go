@@ -26,17 +26,32 @@ type Response struct {
 	text     string         // Content -> string
 }
 
-func Get(url_api string, params map[string]string) *Response {
+func Get(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	for _, data := range Head {
+		for key, value := range data {
+			req.Header[key] = value
+		}
+	}
 	return req.NewRequest()
 }
 
-func Post(url_api string, params map[string]string) *Response {
+func Post(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	for _, data := range Head {
+		for key, value := range data {
+			req.Header[key] = value
+		}
+	}
 	return req.NewRequest()
 }
-func Put(url_api string, params map[string]string) *Response {
+func Put(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "PUT", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
+	for _, data := range Head {
+		for key, value := range data {
+			req.Header[key] = value
+		}
+	}
 	return req.NewRequest()
 }
 

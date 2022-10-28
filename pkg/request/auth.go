@@ -1,50 +1,57 @@
 package request
 
 import (
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
+	"io"
 	"math/rand"
 	"net/url"
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
-//func genClientHash(clientTime string) string {
-//	h := md5.New()
-//	_, _ = io.WriteString(h, clientTime)
-//	_, _ = io.WriteString(h, utils.ClientHashSecret)
-//	return hex.EncodeToString(h.Sum(nil))
-//}
+func genClientHash(clientTime string) string {
+	h := md5.New()
+	_, _ = io.WriteString(h, clientTime)
+	_, _ = io.WriteString(h, utils.ClientHashSecret)
+	return hex.EncodeToString(h.Sum(nil))
+}
 
-//func RefreshAuth() bool {
-//	req := &Request{Params: url.Values{}, Header: map[string]string{}}
-//	req.AddParams("get_secure_url", "1")
-//	req.AddParams("client_id", utils.ClientID)
-//	req.AddParams("client_secret", utils.ClientSecret)
-//	req.AddParams("grant_type", "refresh_token")
-//	req.AddParams("refresh_token", config.Vars.PixivRefreshToken)
-//	clientTime := time.Now().Format(time.RFC3339)
-//	req.AddHeader("X-Client-Time", clientTime)
-//	req.AddHeader("X-Client-Hash", genClientHash(clientTime))
-//	accessToken := &AccessToken{}
-//	//Post("https://oauth.secure.pixiv.net/auth/token", req).Json(accessToken)
-//
-//	fmt.Println(Post("https://oauth.secure.pixiv.net/auth/token", req).Text())
-//	if accessToken.AccessToken == "" {
-//		fmt.Println("refresh auth error  ", accessToken.AccessToken)
-//		return false
-//	} else {
-//		config.VarsFile.Vipers.Set("PIXIV_TOKEN", accessToken.AccessToken)
-//		config.VarsFile.SaveConfig()
-//		fmt.Println("refresh auth success, new token: ", accessToken.AccessToken)
-//	}
-//	return true
-//
-//}
+func RefreshAuth() bool {
+	client_time := time.Now().Format(time.RFC3339)
+	Header := map[string]string{
+		"X-Client-Time": client_time,
+		"X-Client-Hash": genClientHash(client_time),
+	}
+	params := map[string]string{
+		"get_secure_url": "1",
+		"client_id":      utils.ClientID,
+		"client_secret":  utils.ClientSecret,
+		"grant_type":     "refresh_token",
+		"refresh_token":  config.Vars.PixivRefreshToken,
+	}
+	response := Post("https://oauth.secure.pixiv.net/auth/token", params, Header).Json(&AccessToken{}).(*AccessToken)
+
+	if response.AccessToken == "" {
+		fmt.Println("refresh auth error  ", response.AccessToken)
+		return false
+	} else {
+		config.VarsFile.Vipers.Set("PIXIV_TOKEN", response.AccessToken)
+		config.VarsFile.SaveConfig()
+		fmt.Println("refresh auth success,new token: ", response.AccessToken)
+	}
+	return true
+
+}
 
 // Generate a random token
 func generateURLSafeToken(length int) string {
