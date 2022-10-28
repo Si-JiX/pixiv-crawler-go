@@ -3,11 +3,13 @@ package pixiv
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -77,27 +79,20 @@ func (a *AppPixivAPI) UserDetail(uid uint64) (*pixivstruct.UserDetail, error) {
 	return detail, nil
 }
 
-type userIllustsParams struct {
-	UserID int    `url:"user_id,omitempty"`
-	Filter string `url:"filter,omitempty"`
-	Type   string `url:"type,omitempty"`
-	Offset int    `url:"offset,omitempty"`
-}
-
 // UserIllusts type: [illust, manga]
 func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]pixivstruct.Illust, int, error) {
-	params := &userIllustsParams{
-		UserID: uid,
-		Filter: "for_ios",
-		Type:   _type,
-		Offset: offset,
+	params := map[string]string{
+		"user_id": strconv.Itoa(uid),
+		"filter":  "for_ios",
+		"type":    _type,
+		"offset":  strconv.Itoa(offset),
 	}
-	data := &pixivstruct.IllustsResponse{}
-	if err := a.request(USER_AUTHOR, params, data, true); err != nil {
-		return nil, 0, err
+	response := request.Get(API_BASE+USER_AUTHOR, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
+	if response.Error.UserMessage != "" {
+		return nil, 0, errors.New(response.Error.UserMessage)
 	}
-	next, err := parseNextPageOffset(data.NextURL)
-	return data.Illusts, next, err
+	next, err := parseNextPageOffset(response.NextURL)
+	return response.Illusts, next, err
 }
 
 type userBookmarkIllustsParams struct {

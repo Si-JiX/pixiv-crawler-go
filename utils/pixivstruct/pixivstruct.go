@@ -129,6 +129,7 @@ type Series struct {
 }
 
 type IllustsResponse struct {
+	Error   Error    `json:"error"`
 	Illusts []Illust `json:"illusts"`
 	NextURL string   `json:"next_url"`
 }

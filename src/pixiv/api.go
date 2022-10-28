@@ -163,27 +163,6 @@ func RefreshAuth() bool {
 
 }
 
-//func refreshAuth() (*Account, error) {
-//	if time.Now().Before(_tokenDeadline) {
-//		return nil, nil
-//	}
-//	if RefreshTokenVariable == "" {
-//		return nil, fmt.Errorf("missing refresh token")
-//	}
-//	params := &authParams{
-//		GetSecureURL: 1,
-//		ClientID:     utils.ClientID,
-//		ClientSecret: utils.ClientSecret,
-//		GrantType:    "refresh_token",
-//		RefreshToken: RefreshTokenVariable,
-//	}
-//	a, err := auth(params)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return a.User, nil
-//}
-
 // download image to file (use 6.0 app-api)
 func download(client *http.Client, url, path, name string) (int64, error) {
 	if path == "" {
