@@ -83,6 +83,7 @@ func (resp *Response) Content() []byte {
 	if strings.Contains(string(resp.content), "Token") {
 		fmt.Println("Token expired, Refreshing...")
 		RefreshAuth()
+		resp.content = resp.Request.NewRequest().Content()
 		time.Sleep(2 * time.Second)
 	}
 	return resp.content

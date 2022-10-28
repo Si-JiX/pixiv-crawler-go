@@ -59,7 +59,7 @@ func VarsConfigInit() {
 	// path to look for the config file in
 	VarsFile.Vipers.SetDefault("host", "https://app-api.pixiv.net")
 	VarsFile.Vipers.SetDefault("thread_max", 16)
-	VarsFile.Vipers.Set("version_name", "1.1.3")
+	VarsFile.Vipers.Set("version_name", "1.2.7")
 	VarsFile.Vipers.SetDefault("PIXIV_TOKEN", "")
 	VarsFile.Vipers.SetDefault("PIXIV_REFRESH_TOKEN", "")
 	VarsFile.SaveConfig()
