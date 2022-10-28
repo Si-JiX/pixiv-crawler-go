@@ -81,7 +81,12 @@ func get_pixiv_login_url() (string, string) {
 }
 
 func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
-	req := &Request{Params: url.Values{}, Header: map[string]string{}}
+	req := &Request{
+		Mode:   "POST",
+		Params: url.Values{},
+		Header: map[string]string{},
+		Path:   "https://oauth.secure.pixiv.net/auth/token",
+	}
 	req.AddParams("client_id", "MOBrBDS8blbauoSck0ZfDbtuzpyT")
 	req.AddParams("client_secret", "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj")
 	req.AddParams("code", code)
@@ -91,7 +96,7 @@ func loginPixiv(codeVerifier, code string) (*AccessToken, error) {
 	req.AddParams("redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback")
 
 	accessToken := &AccessToken{}
-	response := Post("https://oauth.secure.pixiv.net/auth/token", req)
+	response := Post(req)
 	response.Json(accessToken)
 	if accessToken.AccessToken == "" {
 		return nil, fmt.Errorf("login error %s", response.Text())

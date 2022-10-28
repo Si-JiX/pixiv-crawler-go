@@ -11,6 +11,7 @@ import (
 
 type Request struct {
 	Path     string
+	Mode     string
 	requests *http.Request
 	Header   map[string]string
 	Params   url.Values
@@ -25,11 +26,11 @@ type Response struct {
 }
 
 func Get(url_api string, params map[string]string) *Response {
-	req := &Request{Params: url.Values{}, Header: map[string]string{}, Path: url_api}
+	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api}
 	if params != nil {
-		url_api = url_api + "?" + req.EncodeParams(params)
+		req.Path = req.Path + "?" + req.EncodeParams(params)
 	}
-	req.requests, _ = http.NewRequest("GET", url_api, nil)
+	req.requests, _ = http.NewRequest("GET", req.Path, nil)
 	req.Headers()
 	if response, err := http.DefaultClient.Do(req.requests); err != nil {
 		fmt.Println(err)
@@ -39,11 +40,10 @@ func Get(url_api string, params map[string]string) *Response {
 	return nil
 }
 
-func Post(url_api string, req *Request) *Response {
-	req.requests, _ = http.NewRequest("POST", url_api, req.QueryData())
+func Post(req *Request) *Response {
+	req.requests, _ = http.NewRequest(req.Mode, req.Path, req.QueryData())
 	req.Headers()
 	req.requests.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	//fmt.Println(req.requests.Header)
 	if response, err := http.DefaultClient.Do(req.requests); err != nil {
 		return nil
 	} else {
