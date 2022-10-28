@@ -7,24 +7,14 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
-	"strconv"
 )
 
-func CurrentDownloader(IllustID interface{}) {
-	var illust_id int
-	switch IllustID.(type) {
-	case string:
-		illust_id = utils.INT(IllustID.(string))
-	case int:
-		illust_id = IllustID.(int)
-	default:
-		fmt.Println("you input is not a number,please check", IllustID)
-	}
-	if utils.ListFind(file.ShowFileList("./imageFile"), strconv.Itoa(illust_id)) {
-		fmt.Println(IllustID, "is exist, skip")
+func CurrentDownloader(illust_id string) {
+	if utils.ListFind(file.ShowFileList("./imageFile"), illust_id) {
+		fmt.Println(illust_id, "is exist, skip")
 	} else {
-		if _, err := app.App.Download(illust_id, "imageFile"); err != nil {
-			fmt.Println("download fail", IllustID, err)
+		if illust := app.App.Download(illust_id, "imageFile"); illust != nil {
+			fmt.Printf("image name: %s \t  image id: %d", illust.Title, illust.ID)
 		}
 	}
 }

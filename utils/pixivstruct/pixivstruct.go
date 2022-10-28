@@ -97,7 +97,7 @@ type MetaPage struct {
 }
 
 type Illust struct {
-	ID             uint64          `json:"id"`
+	ID             int             `json:"id"`
 	Title          string          `json:"title"`
 	Type           string          `json:"type"`
 	Images         *Images         `json:"image_urls"`
@@ -134,6 +134,7 @@ type IllustsResponse struct {
 	NextURL string   `json:"next_url"`
 }
 type IllustResponse struct {
+	Error  Error  `json:"error"`
 	Illust Illust `json:"illust"`
 }
 

@@ -2,6 +2,7 @@ package pixiv
 
 import (
 	"fmt"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"github.com/pkg/errors"
 	"io"
 	"log"
@@ -10,20 +11,15 @@ import (
 	"path/filepath"
 )
 
-// Download a specific picture from pixiv id
-func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
+func (a *AppPixivAPI) Download(id string, path string) *pixivstruct.Illust {
 	illust, err := a.IllustDetail(id)
 	if err != nil {
-		err = errors.Wrapf(err, "illust %d detail error", id)
-		return
+		fmt.Println("download fail", err)
+		return nil
 	}
-	if illust == nil {
-		err = errors.Wrapf(err, "illust %d is nil", id)
-		return
-	}
-	if illust.MetaSinglePage == nil {
-		err = errors.Wrapf(err, "illust %d has no single page", id)
-		return
+	if illust == nil || illust.MetaSinglePage == nil {
+		fmt.Println("download fail,illust is nil")
+		return nil
 	}
 
 	var urls []string
@@ -46,15 +42,14 @@ func (a *AppPixivAPI) Download(id int, path string) (sizes []int64, err error) {
 	}
 
 	for _, u := range urls {
-		size, e := download(dclient, u, path, filepath.Base(u))
+		_, e := download(dclient, u, path, filepath.Base(u))
 		if e != nil {
 			err = errors.Wrapf(e, "download url %s failed", u)
-			return
+			return nil
 		}
-		sizes = append(sizes, size)
 	}
 
-	return
+	return illust
 }
 
 // download image to file (use 6.0 app-api)

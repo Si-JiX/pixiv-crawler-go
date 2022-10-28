@@ -88,8 +88,8 @@ func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]pixivstr
 		"offset":  strconv.Itoa(offset),
 	}
 	response := request.Get(API_BASE+USER_AUTHOR, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
-	if response.Error.UserMessage != "" {
-		return nil, 0, errors.New(response.Error.UserMessage)
+	if response.Error.Message != "" {
+		return nil, 0, errors.New(response.Error.Message)
 	}
 	next, err := parseNextPageOffset(response.NextURL)
 	return response.Illusts, next, err
@@ -136,18 +136,13 @@ func (a *AppPixivAPI) IllustFollow(restrict string, offset int) ([]pixivstruct.I
 	return data.Illusts, next, err
 }
 
-type illustDetailParams struct {
-	IllustID int `url:"illust_id,omitemtpy"`
-}
-
-// IllustDetail get a detailed illust with id
-func (a *AppPixivAPI) IllustDetail(id int) (*pixivstruct.Illust, error) {
-	data := &pixivstruct.IllustResponse{}
-	params := &illustDetailParams{IllustID: id}
-	if err := a.request(DETAIL, params, data, true); err != nil {
-		return nil, err
+func (a *AppPixivAPI) IllustDetail(id string) (*pixivstruct.Illust, error) {
+	params := map[string]string{"illust_id": id}
+	response := request.Get(API_BASE+DETAIL, params).Json(&pixivstruct.IllustResponse{}).(*pixivstruct.IllustResponse)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
 	}
-	return &data.Illust, nil
+	return &response.Illust, nil
 }
 
 func (a *AppPixivAPI) ThreadDownloadImage(url string) {
@@ -398,8 +393,8 @@ func userFollowStats(urlEnd string, userID int, restrict string, offset int) (*p
 		"offset":   strconv.Itoa(offset),
 	}
 	response := request.Get(API_BASE+USER+urlEnd, params).Json(&pixivstruct.UserFollowList{}).(*pixivstruct.UserFollowList)
-	if response.Error.UserMessage != "" {
-		return nil, errors.New(response.Error.UserMessage)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
 	}
 	return response, nil
 }

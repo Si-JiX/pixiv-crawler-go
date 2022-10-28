@@ -5,7 +5,7 @@ import (
 )
 
 var CommandLines = struct {
-	IllustID  int
+	IllustID  string
 	UserID    int
 	Following bool
 	Recommend bool
@@ -16,9 +16,9 @@ var CommandLines = struct {
 }{}
 
 var CommandLineFlag = []cli.Flag{
-	cli.IntFlag{
+	cli.StringFlag{
 		Name:        "d, download",
-		Value:       0,
+		Value:       "",
 		Usage:       "input IllustID to download",
 		Destination: &CommandLines.IllustID,
 	},
