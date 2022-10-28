@@ -29,34 +29,19 @@ type Response struct {
 
 func Get(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "GET", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	for _, data := range Head {
-		for key, value := range data {
-			req.Header[key] = value
-		}
-	}
-	return req.NewRequest()
+	return req.NewRequest(Head...)
 }
 
 func Post(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "POST", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	for _, data := range Head {
-		for key, value := range data {
-			req.Header[key] = value
-		}
-	}
-	return req.NewRequest()
+	return req.NewRequest(Head...)
 }
 func Put(url_api string, params map[string]string, Head ...map[string]string) *Response {
 	req := &Request{Mode: "PUT", Params: url.Values{}, Header: map[string]string{}, Path: url_api, Query: params}
-	for _, data := range Head {
-		for key, value := range data {
-			req.Header[key] = value
-		}
-	}
-	return req.NewRequest()
+	return req.NewRequest(Head...)
 }
 
-func (req *Request) NewRequest() *Response {
+func (req *Request) NewRequest(Head ...map[string]string) *Response {
 	var err error
 	var body io.ReadCloser
 	var response *http.Response
@@ -69,6 +54,11 @@ func (req *Request) NewRequest() *Response {
 	if err != nil {
 		fmt.Println("http.NewRequest error:", err)
 		return nil
+	}
+	for _, data := range Head {
+		for key, value := range data {
+			req.Header[key] = value
+		}
 	}
 	req.Headers()
 	if response, err = http.DefaultClient.Do(req.requests); err != nil {
