@@ -7,7 +7,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"strconv"
 )
 
@@ -60,10 +59,32 @@ func GET_USER_FOLLOWING(UserID int) {
 	for _, user := range following.UserPreviews {
 		ThreadDownloadImages(GET_AUTHOR_INFO(user.User.ID, 0))
 	}
-
 }
 
-func GET_RECOMMEND(next_url string, auth bool) {
+func ShellRanking(next_url string) {
+	// IllustRanking mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
+	illusts, err := app.App.IllustRanking(next_url, "day")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, illust := range illusts.Illusts {
+		if illust.MetaSinglePage.OriginalImageURL == "" {
+			for _, img := range illust.MetaPages {
+				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
+			}
+		} else {
+			utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
+		}
+	}
+	ThreadDownloadImages(utils.ImageUrlList)
+	utils.ImageUrlList = nil
+	if illusts.NextURL != "" {
+		ShellRanking(next_url)
+	}
+}
+
+func ShellRecommend(next_url string, auth bool) {
 	recommended, err := app.App.Recommended(next_url, auth)
 	if err != nil {
 		fmt.Println(err)
@@ -81,8 +102,7 @@ func GET_RECOMMEND(next_url string, auth bool) {
 	ThreadDownloadImages(utils.ImageUrlList)
 	utils.ImageUrlList = nil
 	if recommended.NextURL != "" {
-		IllustRecommended := &pixivstruct.IllustRecommended{}
-		GET_RECOMMEND(IllustRecommended.NextURL, auth)
+		ShellRecommend(recommended.NextURL, auth)
 	}
 
 }

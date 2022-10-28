@@ -259,30 +259,20 @@ func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.Il
 	return response, nil
 }
 
-type illustRankingParams struct {
-	Mode   string `url:"mode,omitempty"`
-	Filter string `url:"filter,omitempty"`
-	Date   string `url:"date,omitempty"`
-	Offset string `url:"offset,omitempty"`
-}
-
-// IllustRanking Ranking of works
-//
-// mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
-//
-// date: yyyy-mm-dd
-func (a *AppPixivAPI) IllustRanking(mode string, filter string, date string, offset string) (*pixivstruct.IllustsResponse, error) {
-	data := &pixivstruct.IllustsResponse{}
-	params := &illustRankingParams{
-		Mode:   mode,
-		Filter: filter,
-		Offset: offset,
-		Date:   date,
+// IllustRanking mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]  date: yyyy-mm-dd
+func (a *AppPixivAPI) IllustRanking(next_url string, mode string) (*pixivstruct.IllustsResponse, error) {
+	params := map[string]string{"mode": mode}
+	if next_url == "" {
+		next_url = RANKING
+	} else {
+		next_url = strings.ReplaceAll(next_url, API_BASE, "")
+		params = nil
 	}
-	if err := a.request(RANKING, params, data, true); err != nil {
-		return nil, err
+	response := request.Get(API_BASE+next_url, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
 	}
-	return data, nil
+	return response, nil
 }
 
 type trendingTagsIllustParams struct {
