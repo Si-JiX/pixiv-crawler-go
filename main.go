@@ -50,7 +50,7 @@ func command_line_shell(c *cli.Context) error {
 	} else if arguments.CommandLines.Recommend {
 		src.ShellRecommend("", true)
 	} else if arguments.CommandLines.Ranking {
-		src.ShellRanking("")
+		src.ShellRanking()
 	} else {
 		if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
 			_ = cli.ShowAppHelp(c)

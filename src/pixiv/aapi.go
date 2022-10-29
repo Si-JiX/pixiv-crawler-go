@@ -256,15 +256,9 @@ func (a *AppPixivAPI) Recommended(url string, requireAuth bool) (*pixivstruct.Il
 }
 
 // IllustRanking mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]  date: yyyy-mm-dd
-func (a *AppPixivAPI) IllustRanking(next_url string, mode string) (*pixivstruct.IllustsResponse, error) {
+func (a *AppPixivAPI) IllustRanking(mode string) (*pixivstruct.IllustsResponse, error) {
 	params := map[string]string{"mode": mode}
-	if next_url == "" {
-		next_url = RANKING
-	} else {
-		next_url = strings.ReplaceAll(next_url, API_BASE, "")
-		params = nil
-	}
-	response := request.Get(API_BASE+next_url, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
+	response := request.Get(API_BASE+RANKING, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
 	if response.Error.Message != "" {
 		return nil, errors.New(response.Error.Message)
 	}

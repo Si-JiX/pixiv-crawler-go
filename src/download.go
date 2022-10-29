@@ -101,12 +101,12 @@ func GET_USER_FOLLOWING(UserID int) {
 	}
 }
 
-func ShellRanking(next_url string) {
+func ShellRanking() {
 	RankingMode := []string{"day", "week", "month", "day_male", "day_female", "week_original", "week_rookie", "day_manga"}
 	for index, mode := range RankingMode {
 		fmt.Println("index:", index, "\tmodel:", mode)
 	}
-	illusts, err := app.App.IllustRanking(next_url, RankingMode[input.OutputInt(">", ">", len(RankingMode))])
+	illusts, err := app.App.IllustRanking(RankingMode[input.OutputInt(">", ">", len(RankingMode))])
 	if err != nil {
 		fmt.Println("Ranking request fail,please check network", err)
 	} else {
