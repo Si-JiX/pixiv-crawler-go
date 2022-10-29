@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/arguments"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/cli"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
-	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
 )

@@ -3,6 +3,8 @@ module github.com/VeronicaAlexia/pixiv-crawler-go
 go 1.19
 
 require (
+	github.com/BurntSushi/toml v1.2.1
+	github.com/cpuguy83/go-md2man/v2 v2.0.2
 	github.com/dghubble/sling v1.4.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/hashicorp/hcl v1.0.0
@@ -18,7 +20,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/subosito/gotenv v1.4.1
 	gopkg.in/ini.v1 v1.67.0
-	gopkg.in/urfave/cli.v1 v1.20.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -51,6 +52,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.5 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.5 // indirect
 	go.etcd.io/etcd/client/v2 v2.305.5 // indirect

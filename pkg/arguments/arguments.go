@@ -1,7 +1,7 @@
 package arguments
 
 import (
-	"gopkg.in/urfave/cli.v1"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/cli"
 )
 
 var CommandLines = struct {
