@@ -11,6 +11,7 @@ var CommandLines = struct {
 	Recommend bool
 	Ranking   bool
 	AuthorID  int
+	Stars     bool
 	Name      string
 	URL       string
 }{}
@@ -55,6 +56,11 @@ var CommandLineFlag = []cli.Flag{
 		Name:        "r, recommend",
 		Usage:       "recommend illust",
 		Destination: &CommandLines.Recommend,
+	},
+	cli.BoolFlag{
+		Name:        "s, stars",
+		Usage:       "download stars",
+		Destination: &CommandLines.Stars,
 	},
 	cli.BoolFlag{
 		Name:        "rk, ranking",

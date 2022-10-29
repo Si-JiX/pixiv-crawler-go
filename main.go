@@ -50,16 +50,25 @@ func main() {
 func command_line_shell(c *cli.Context) error {
 	if arguments.CommandLines.IllustID != "" {
 		src.CurrentDownloader(arguments.CommandLines.IllustID)
+
 	} else if arguments.CommandLines.AuthorID != 0 {
 		src.GET_AUTHOR_INFO(arguments.CommandLines.AuthorID, 0)
+
 	} else if arguments.CommandLines.URL != "" {
 		src.CurrentDownloader(utils.GetInt(arguments.CommandLines.URL))
+
 	} else if arguments.CommandLines.Following {
 		src.GET_USER_FOLLOWING(arguments.CommandLines.UserID)
+
 	} else if arguments.CommandLines.Recommend {
 		src.ShellRecommend("", true)
+
 	} else if arguments.CommandLines.Ranking {
 		src.ShellRanking()
+
+	} else if arguments.CommandLines.Stars {
+		src.ShellStars(config.Vars.UserID, "")
+
 	} else {
 		if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
 			_ = cli.ShowAppHelp(c)

@@ -89,13 +89,18 @@ func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]pixivstr
 }
 
 // UserBookmarksIllust restrict: [public, private]
-func (a *AppPixivAPI) UserBookmarksIllust(uid int) ([]pixivstruct.Illust, error) {
+func (a *AppPixivAPI) UserBookmarksIllust(uid int, next_url string) (*pixivstruct.IllustsResponse, error) {
 	params := map[string]string{"user_id": strconv.Itoa(uid), "restrict": "public"}
-	response := request.Get(API_BASE+BOOKMARKS, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
+	if next_url == "" {
+		next_url = API_BASE + BOOKMARKS
+	} else {
+		params = nil
+	}
+	response := request.Get(next_url, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
 	if response.Error.Message != "" {
 		return nil, errors.New(response.Error.Message)
 	} else {
-		return response.Illusts, nil
+		return response, nil
 	}
 }
 

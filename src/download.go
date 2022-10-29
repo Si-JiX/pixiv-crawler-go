@@ -96,6 +96,20 @@ func GET_USER_FOLLOWING(UserID int) {
 	}
 }
 
+func ShellStars(user_id int, next_url string) {
+	bookmarks, err := app.App.UserBookmarksIllust(user_id, next_url)
+	if err != nil {
+		fmt.Println("Request user bookmarks illust fail,please check network", err)
+	} else {
+
+		download_illusts := Downloader(bookmarks.Illusts)
+		download_illusts.DownloadImages()
+		if bookmarks.NextURL != "" {
+			ShellStars(user_id, bookmarks.NextURL)
+		}
+	}
+}
+
 func ShellRanking() {
 	RankingMode := []string{"day", "week", "month", "day_male", "day_female", "week_original", "week_rookie", "day_manga"}
 	for index, mode := range RankingMode {
