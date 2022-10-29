@@ -3,6 +3,7 @@ package pixiv
 import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
@@ -145,7 +146,7 @@ func (a *AppPixivAPI) IllustDetail(id string) (*pixivstruct.Illust, error) {
 	return &response.Illust, nil
 }
 
-func (a *AppPixivAPI) ThreadDownloadImage(url string) {
+func (a *AppPixivAPI) ThreadDownloadImage(url string, bar *progressbar.Bar) {
 	defer threadpool.Threading.Done()
 	dclient := &http.Client{}
 	if a.proxy != nil {
@@ -161,7 +162,8 @@ func (a *AppPixivAPI) ThreadDownloadImage(url string) {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}
 	threadpool.Threading.ProgressCountAdd()
-	threadpool.Threading.GetProgressInfo()
+	//threadpool.Threading.GetProgressInfo()
+	bar.AddProgressCount(threadpool.Threading.GetProgressCount())
 
 }
 

@@ -43,7 +43,11 @@ func (t *ThreadStruct) ProgressCountAdd() {
 }
 
 func (t *ThreadStruct) GetProgressInfo() {
-	fmt.Printf("download image:%d/%d\r", Threading.progressCount, Threading.ProgressLength)
+	fmt.Printf("download image:%d/%d\r", t.progressCount, t.ProgressLength)
+}
+
+func (t *ThreadStruct) GetProgressCount() int {
+	return t.progressCount
 }
 
 func (t *ThreadStruct) Close() {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
@@ -23,10 +24,12 @@ func ThreadDownloadImages(image_list []string) {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
 		threadpool.InitThread()
 		threadpool.Threading.ProgressLength = len(image_list)
+		progress := progressbar.NewProgress(threadpool.Threading.ProgressLength, "")
 		for i := 0; i < len(image_list); i++ {
 			threadpool.Threading.Add()
-			go app.App.ThreadDownloadImage(image_list[i])
+			go app.App.ThreadDownloadImage(image_list[i], progress)
 		}
+		progress.ProgressEnd()
 		utils.ImageUrlList = nil
 		threadpool.Threading.Close() // Wait for all threads to finish
 	} else {
