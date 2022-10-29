@@ -11,7 +11,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
-	"github.com/pkg/errors"
 	"net/http"
 	"path/filepath"
 )
@@ -48,7 +47,7 @@ func (thread *Download) Images(url string) {
 	defer thread.Thread.Done()
 	_, e := pixiv.DownloadMain(&http.Client{}, url, "imageFile", filepath.Base(url))
 	if e != nil {
-		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
+		fmt.Println(e)
 	}
 	thread.Thread.ProgressCountAdd() // progress count add 1
 	thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())

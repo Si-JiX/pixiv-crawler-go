@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/viper"
 )
 
 var VarsFile *VarsConfig
