@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
@@ -101,8 +102,11 @@ func GET_USER_FOLLOWING(UserID int) {
 }
 
 func ShellRanking(next_url string) {
-	// RankingMode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
-	illusts, err := app.App.IllustRanking(next_url, "day")
+	RankingMode := []string{"day", "week", "month", "day_male", "day_female", "week_original", "week_rookie", "day_manga"}
+	for index, mode := range RankingMode {
+		fmt.Println("index:", index, "\tmodel:", mode)
+	}
+	illusts, err := app.App.IllustRanking(next_url, RankingMode[input.OutputInt(">", ">", len(RankingMode))])
 	if err != nil {
 		fmt.Println("Ranking request fail,please check network", err)
 	} else {

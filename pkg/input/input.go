@@ -18,14 +18,18 @@ func Input(info1 string, info string) string {
 	}
 }
 
-func InputInt(start_info string, info string) int {
+func OutputInt(start_info string, info string, maximum int) int {
 	fmt.Println(start_info)
 	for {
 		var input string
-		fmt.Println(info)
+		fmt.Printf(info)
 		_, _ = fmt.Scanln(&input)
-		if Atoi, err := strconv.Atoi(input); err != nil {
+		if input == "" {
+			continue
+		} else if Atoi, err := strconv.Atoi(input); err != nil {
 			fmt.Println("please input int:", err)
+		} else if Atoi >= maximum {
+			fmt.Println("please input int less than", maximum)
 		} else {
 			return Atoi
 		}
