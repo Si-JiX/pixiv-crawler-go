@@ -88,29 +88,15 @@ func (a *AppPixivAPI) UserIllusts(uid int, _type string, offset int) ([]pixivstr
 	return response.Illusts, next, err
 }
 
-type userBookmarkIllustsParams struct {
-	UserID        uint64 `url:"user_id,omitempty"`
-	Restrict      string `url:"restrict,omitempty"`
-	Filter        string `url:"filter,omitempty"`
-	MaxBookmarkID int    `url:"max_bookmark_id,omitempty"`
-	Tag           string `url:"tag,omitempty"`
-}
-
 // UserBookmarksIllust restrict: [public, private]
-func (a *AppPixivAPI) UserBookmarksIllust(uid uint64, maxBookmarkID int, tag string) ([]pixivstruct.Illust, int, error) {
-	params := &userBookmarkIllustsParams{
-		UserID:        uid,
-		Restrict:      "public",
-		Filter:        "for_ios",
-		MaxBookmarkID: maxBookmarkID,
-		Tag:           tag,
+func (a *AppPixivAPI) UserBookmarksIllust(uid int) ([]pixivstruct.Illust, error) {
+	params := map[string]string{"user_id": strconv.Itoa(uid), "restrict": "public"}
+	response := request.Get(API_BASE+BOOKMARKS, params).Json(&pixivstruct.IllustsResponse{}).(*pixivstruct.IllustsResponse)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
+	} else {
+		return response.Illusts, nil
 	}
-	data := &pixivstruct.IllustsResponse{}
-	if err := a.request(BOOKMARKS, params, data, true); err != nil {
-		return nil, 0, err
-	}
-	next, err := parseNextPageOffset(data.NextURL)
-	return data.Illusts, next, err
 }
 
 type illustFollowParams struct {
