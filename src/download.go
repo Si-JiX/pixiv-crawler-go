@@ -8,7 +8,53 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 )
+
+type Download struct {
+	DownloadArray []string
+	ArrayLength   int
+	Illusts       []pixivstruct.Illust
+	Thread        *threadpool.ThreadStruct
+	Progress      *progressbar.Bar
+}
+
+func Downloader(Illusts []pixivstruct.Illust) *Download {
+	var ImageList []string
+	for _, illust := range Illusts {
+		if illust.MetaSinglePage.OriginalImageURL == "" {
+			for _, img := range illust.MetaPages {
+				ImageList = append(ImageList, img.Images.Original)
+			}
+		} else {
+			ImageList = append(ImageList, illust.MetaSinglePage.OriginalImageURL)
+		}
+	}
+	return &Download{
+		Illusts:       Illusts,
+		Thread:        threadpool.InitThread(),
+		DownloadArray: ImageList,
+		ArrayLength:   len(ImageList),
+		Progress:      progressbar.NewProgress(len(ImageList), ""),
+	}
+}
+
+func (thread *Download) DownloadImages() {
+	if thread.ArrayLength != 0 {
+		fmt.Println("一共", thread.ArrayLength, "张图片,开始下载中...")
+		thread.Thread.ProgressLength = thread.ArrayLength
+		for _, image_url := range thread.DownloadArray {
+			thread.Thread.Add()
+			go app.App.ThreadDownloadImage(image_url, thread.Progress)
+		}
+		thread.Progress.ProgressEnd()
+		utils.ImageUrlList = nil
+		thread.Thread.Close() // Wait for all threads to finish
+	} else {
+		fmt.Println("add image list fail,please check image list")
+	}
+	thread.DownloadArray = nil
+}
 
 func CurrentDownloader(illust_id string) {
 	if utils.ListFind(file.ShowFileList("./imageFile"), illust_id) {
@@ -55,25 +101,13 @@ func GET_USER_FOLLOWING(UserID int) {
 }
 
 func ShellRanking(next_url string) {
-	// IllustRanking mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
+	// RankingMode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
 	illusts, err := app.App.IllustRanking(next_url, "day")
 	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, illust := range illusts.Illusts {
-		if illust.MetaSinglePage.OriginalImageURL == "" {
-			for _, img := range illust.MetaPages {
-				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
-			}
-		} else {
-			utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
-		}
-	}
-	ThreadDownloadImages(utils.ImageUrlList)
-	utils.ImageUrlList = nil
-	if illusts.NextURL != "" {
-		ShellRanking(next_url)
+		fmt.Println("Ranking request fail,please check network", err)
+	} else {
+		download_illusts := Downloader(illusts.Illusts)
+		download_illusts.DownloadImages()
 	}
 }
 

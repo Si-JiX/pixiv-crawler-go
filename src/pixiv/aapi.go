@@ -148,33 +148,32 @@ func (a *AppPixivAPI) IllustDetail(id string) (*pixivstruct.Illust, error) {
 
 func (a *AppPixivAPI) ThreadDownloadImage(url string, bar *progressbar.Bar) {
 	defer threadpool.Threading.Done()
-	dclient := &http.Client{}
+	client := &http.Client{}
 	if a.proxy != nil {
-		dclient.Transport = &http.Transport{
+		client.Transport = &http.Transport{
 			Proxy: http.ProxyURL(a.proxy),
 		}
 	}
 	if a.timeout != 0 {
-		dclient.Timeout = a.timeout
+		client.Timeout = a.timeout
 	}
-	_, e := download(dclient, url, "imageFile", filepath.Base(url))
+	_, e := download(client, url, "imageFile", filepath.Base(url))
 	if e != nil {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}
-	threadpool.Threading.ProgressCountAdd()
-	//threadpool.Threading.GetProgressInfo()
+	threadpool.Threading.ProgressCountAdd() // progress count add 1
 	bar.AddProgressCount(threadpool.Threading.GetProgressCount())
 
 }
 
 type illustCommentsParams struct {
-	IllustID             uint64 `url:"illust_id,omitemtpy"`
-	Offset               int    `url:"offset,omitempty"`
-	IncludeTotalComments bool   `url:"include_total_comments,omitempty"`
+	IllustID             int  `url:"illust_id,omitemtpy"`
+	Offset               int  `url:"offset,omitempty"`
+	IncludeTotalComments bool `url:"include_total_comments,omitempty"`
 }
 
 // IllustComments Comments posted in a pixiv artwork
-func (a *AppPixivAPI) IllustComments(illustID uint64, offset int, includeTotalComments bool) (*pixivstruct.IllustComments, error) {
+func (a *AppPixivAPI) IllustComments(illustID int, offset int, includeTotalComments bool) (*pixivstruct.IllustComments, error) {
 	data := &pixivstruct.IllustComments{}
 	params := &illustCommentsParams{
 		IllustID:             illustID,

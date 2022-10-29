@@ -15,11 +15,12 @@ type ThreadStruct struct {
 	progressCount  int
 }
 
-func InitThread() {
+func InitThread() *ThreadStruct {
 	if config.Vars.ThreadMax == 0 {
 		config.Vars.ThreadMax = 16
 	}
 	Threading = &ThreadStruct{wg: &sync.WaitGroup{}, ch: make(chan struct{}, config.Vars.ThreadMax)}
+	return Threading
 }
 
 func (t *ThreadStruct) Add() {
