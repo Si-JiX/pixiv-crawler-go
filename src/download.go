@@ -8,8 +8,12 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
+	"github.com/pkg/errors"
+	"net/http"
+	"path/filepath"
 )
 
 type Download struct {
@@ -40,16 +44,24 @@ func Downloader(Illusts []pixivstruct.Illust) *Download {
 	}
 }
 
+func (thread *Download) Images(url string) {
+	defer thread.Thread.Done()
+	_, e := pixiv.DownloadMain(&http.Client{}, url, "imageFile", filepath.Base(url))
+	if e != nil {
+		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
+	}
+	thread.Thread.ProgressCountAdd() // progress count add 1
+	thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
+}
 func (thread *Download) DownloadImages() {
 	if thread.ArrayLength != 0 {
-		fmt.Println("一共", thread.ArrayLength, "张图片,开始下载中...")
+		fmt.Println("\n\n一共", thread.ArrayLength, "张图片,开始下载中...")
 		thread.Thread.ProgressLength = thread.ArrayLength
 		for _, image_url := range thread.DownloadArray {
 			thread.Thread.Add()
-			go app.App.ThreadDownloadImage(image_url, thread.Progress)
+			go thread.Images(image_url)
 		}
 		thread.Progress.ProgressEnd()
-		utils.ImageUrlList = nil
 		thread.Thread.Close() // Wait for all threads to finish
 	} else {
 		fmt.Println("add image list fail,please check image list")
@@ -66,6 +78,7 @@ func CurrentDownloader(illust_id string) {
 		}
 	}
 }
+
 func ThreadDownloadImages(image_list []string) {
 	if len(image_list) != 0 {
 		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
@@ -116,26 +129,15 @@ func ShellRanking() {
 }
 
 func ShellRecommend(next_url string, auth bool) {
-	recommended, err := app.App.Recommended(next_url, auth)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, illust := range recommended.Illusts {
-		if illust.MetaSinglePage.OriginalImageURL == "" {
-			for _, img := range illust.MetaPages {
-				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
-			}
-		} else {
-			utils.ImageUrlList = append(utils.ImageUrlList, illust.MetaSinglePage.OriginalImageURL)
+	if recommended, err := app.App.Recommended(next_url, auth); err != nil {
+		fmt.Println("Recommended request fail,please check network", err)
+	} else {
+		download_illusts := Downloader(recommended.Illusts)
+		download_illusts.DownloadImages()
+		if recommended.NextURL != "" {
+			ShellRecommend(recommended.NextURL, auth)
 		}
 	}
-	ThreadDownloadImages(utils.ImageUrlList)
-	utils.ImageUrlList = nil
-	if recommended.NextURL != "" {
-		ShellRecommend(recommended.NextURL, auth)
-	}
-
 }
 
 func GET_AUTHOR_INFO(author_id int, page int) []string {

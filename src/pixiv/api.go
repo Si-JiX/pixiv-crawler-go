@@ -42,7 +42,7 @@ func (a *AppPixivAPI) Download(id string, path string) *pixivstruct.Illust {
 	}
 
 	for _, u := range urls {
-		_, e := download(dclient, u, path, filepath.Base(u))
+		_, e := DownloadMain(dclient, u, path, filepath.Base(u))
 		if e != nil {
 			err = errors.Wrapf(e, "download url %s failed", u)
 			return nil
@@ -52,8 +52,8 @@ func (a *AppPixivAPI) Download(id string, path string) *pixivstruct.Illust {
 	return illust
 }
 
-// download image to file (use 6.0 app-api)
-func download(client *http.Client, url, path, name string) (int64, error) {
+// DownloadMain image to file (use 6.0 app-api)
+func DownloadMain(client *http.Client, url, path, name string) (int64, error) {
 	if path == "" {
 		return 0, fmt.Errorf("download path needed")
 	}

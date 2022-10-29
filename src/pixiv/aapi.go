@@ -157,7 +157,7 @@ func (a *AppPixivAPI) ThreadDownloadImage(url string, bar *progressbar.Bar) {
 	if a.timeout != 0 {
 		client.Timeout = a.timeout
 	}
-	_, e := download(client, url, "imageFile", filepath.Base(url))
+	_, e := DownloadMain(client, url, "imageFile", filepath.Base(url))
 	if e != nil {
 		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
 	}
