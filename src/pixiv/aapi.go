@@ -1,15 +1,11 @@
 package pixiv
 
 import (
-	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -144,26 +140,6 @@ func (a *AppPixivAPI) IllustDetail(id string) (*pixivstruct.Illust, error) {
 		return nil, errors.New(response.Error.Message)
 	}
 	return &response.Illust, nil
-}
-
-func (a *AppPixivAPI) ThreadDownloadImage(url string, bar *progressbar.Bar) {
-	defer threadpool.Threading.Done()
-	client := &http.Client{}
-	if a.proxy != nil {
-		client.Transport = &http.Transport{
-			Proxy: http.ProxyURL(a.proxy),
-		}
-	}
-	if a.timeout != 0 {
-		client.Timeout = a.timeout
-	}
-	_, e := DownloadMain(client, url, "imageFile", filepath.Base(url))
-	if e != nil {
-		fmt.Println(errors.Wrapf(e, "download url %s failed", url))
-	}
-	threadpool.Threading.ProgressCountAdd() // progress count add 1
-	bar.AddProgressCount(threadpool.Threading.GetProgressCount())
-
 }
 
 type illustCommentsParams struct {

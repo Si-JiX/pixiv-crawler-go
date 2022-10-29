@@ -79,24 +79,6 @@ func CurrentDownloader(illust_id string) {
 	}
 }
 
-func ThreadDownloadImages(image_list []string) {
-	if len(image_list) != 0 {
-		fmt.Println("一共", len(image_list), "张图片,开始下载中...")
-		threadpool.InitThread()
-		threadpool.Threading.ProgressLength = len(image_list)
-		progress := progressbar.NewProgress(threadpool.Threading.ProgressLength, "")
-		for i := 0; i < len(image_list); i++ {
-			threadpool.Threading.Add()
-			go app.App.ThreadDownloadImage(image_list[i], progress)
-		}
-		progress.ProgressEnd()
-		utils.ImageUrlList = nil
-		threadpool.Threading.Close() // Wait for all threads to finish
-	} else {
-		fmt.Println("add image list fail,please check image list")
-	}
-}
-
 func GET_USER_FOLLOWING(UserID int) {
 	if UserID == 0 {
 		UserID = config.Vars.UserID
@@ -110,7 +92,7 @@ func GET_USER_FOLLOWING(UserID int) {
 	}
 	fmt.Println("一共", len(following.UserPreviews), "个关注的用户")
 	for _, user := range following.UserPreviews {
-		ThreadDownloadImages(GET_AUTHOR_INFO(user.User.ID, 0))
+		GET_AUTHOR_INFO(user.User.ID, 0)
 	}
 }
 
@@ -140,21 +122,16 @@ func ShellRecommend(next_url string, auth bool) {
 	}
 }
 
-func GET_AUTHOR_INFO(author_id int, page int) []string {
+func GET_AUTHOR_INFO(author_id int, page int) {
 	illusts, next, err := app.App.UserIllusts(author_id, "illust", page)
-	for _, Illust := range illusts {
-		// Test if the image is a manga or not
-		if Illust.MetaSinglePage.OriginalImageURL == "" {
-			for _, img := range Illust.MetaPages {
-				utils.ImageUrlList = append(utils.ImageUrlList, img.Images.Original)
-			}
-		} else {
-			utils.ImageUrlList = append(utils.ImageUrlList, Illust.MetaSinglePage.OriginalImageURL)
+	if err == nil {
+		download_illusts := Downloader(illusts)
+		download_illusts.DownloadImages()
+		if err == nil && next != 0 {
+			// If there is a next page, continue to request
+			GET_AUTHOR_INFO(author_id, next)
 		}
+	} else {
+		fmt.Println("Request author info fail,please check network", err)
 	}
-	// If there is a next page, continue to request
-	if err == nil && next != 0 {
-		GET_AUTHOR_INFO(author_id, next)
-	}
-	return utils.ImageUrlList
 }
