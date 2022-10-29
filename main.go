@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/arguments"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"gopkg.in/urfave/cli.v1"
 	"log"
@@ -22,6 +24,13 @@ func init() {
 			config.VarsFile.Vipers.Set("PIXIV_TOKEN", accessToken.AccessToken)
 			config.VarsFile.Vipers.Set("PIXIV_USER_ID", accessToken.User.ID)
 			config.VarsFile.SaveConfig()
+		}
+	} else {
+		res, err := app.App.UserDetail(config.Vars.UserID)
+		if err != nil {
+			panic(err)
+		} else {
+			fmt.Println("account: ", res.User.Name, "\tid: ", res.User.ID)
 		}
 	}
 }

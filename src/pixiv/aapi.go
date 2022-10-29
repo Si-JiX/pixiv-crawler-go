@@ -62,18 +62,14 @@ func (a *AppPixivAPI) post(path string, params, data interface{}, auth bool) (er
 	return err
 }
 
-type userDetailParams struct {
-	UserID uint64 `url:"user_id,omitempty"`
-	Filter string `url:"filter,omitempty"`
-}
-
-func (a *AppPixivAPI) UserDetail(uid uint64) (*pixivstruct.UserDetail, error) {
-	params := &userDetailParams{UserID: uid, Filter: "for_ios"}
-	detail := &pixivstruct.UserDetail{User: &pixivstruct.User{}}
-	if err := a.request(USER_DETAIL, params, detail, true); err != nil {
-		return nil, err
+func (a *AppPixivAPI) UserDetail(uid int) (*pixivstruct.UserDetail, error) {
+	params := map[string]string{"user_id": strconv.Itoa(uid), "filter": "for_ios"}
+	response := request.Get(API_BASE+USER_DETAIL, params).Json(&pixivstruct.UserDetail{}).(*pixivstruct.UserDetail)
+	if response.Error.Message != "" {
+		return nil, errors.New(response.Error.Message)
+	} else {
+		return response, nil
 	}
-	return detail, nil
 }
 
 // UserIllusts type: [illust, manga]

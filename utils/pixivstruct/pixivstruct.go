@@ -21,10 +21,11 @@ type User struct {
 }
 
 type UserDetail struct {
-	User             *User             `json:"user"`
-	Profile          *Profile          `json:"profile"`
-	ProfilePublicity *ProfilePublicity `json:"profile_publicity"`
-	Workspace        *Workspace        `json:"workspace"`
+	Error            Error            `json:"error"`
+	User             User             `json:"user"`
+	Profile          Profile          `json:"profile"`
+	ProfilePublicity ProfilePublicity `json:"profile_publicity"`
+	Workspace        Workspace        `json:"workspace"`
 }
 
 type Profile struct {
