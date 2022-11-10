@@ -54,7 +54,7 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 		illust_struct.Thread.ProgressLength = illust_struct.ArrayLength
 		for _, image_url := range illust_struct.DownloadArray {
 			illust_struct.Thread.Add()
-			go Images(image_url, illust_struct) // download image by thread
+			go ImagesSingly(image_url, illust_struct) // download image by thread
 		}
 		illust_struct.Progress.ProgressEnd()
 		illust_struct.Thread.Close() // Wait for all threads to finish
@@ -64,7 +64,7 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 	return nil
 }
 
-func Images(url string, thread *Download) {
+func ImagesSingly(url string, thread *Download) {
 	if thread != nil {
 		defer thread.Thread.Done()
 	}
@@ -110,8 +110,9 @@ func DownloaderSingly(illust_id string) {
 		} else {
 			urls = append(urls, illust.MetaSinglePage.OriginalImageURL)
 		}
-		for _, url := range urls {
-			Images(url, nil)
+		for index, url := range urls {
+			fmt.Println("download", illust.Title, "\timage", index+1, "of", len(urls))
+			ImagesSingly(url, nil)
 		}
 	}
 }
