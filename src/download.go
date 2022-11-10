@@ -23,7 +23,7 @@ type Download struct {
 	Progress      *progressbar.Bar
 }
 
-func DownloadTask(Illusts []pixivstruct.Illust) *Download {
+func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 	var ImageList []string
 	for _, illust := range Illusts {
 		if illust.MetaSinglePage.OriginalImageURL == "" {
@@ -34,12 +34,18 @@ func DownloadTask(Illusts []pixivstruct.Illust) *Download {
 			ImageList = append(ImageList, illust.MetaSinglePage.OriginalImageURL)
 		}
 	}
-	return &Download{
+	illust_struct := &Download{
 		Illusts:       Illusts,
 		Thread:        threadpool.InitThread(),
 		DownloadArray: ImageList,
 		ArrayLength:   len(ImageList),
 		Progress:      progressbar.NewProgress(len(ImageList), ""),
+	}
+	if start {
+		illust_struct.DownloadImages()
+		return nil
+	} else {
+		return illust_struct
 	}
 }
 
@@ -100,8 +106,7 @@ func ShellStars(user_id int, next_url string) {
 	if err != nil {
 		fmt.Println("Request user bookmarks illust fail,please check network", err)
 	} else {
-		download_illusts := DownloadTask(bookmarks.Illusts)
-		download_illusts.DownloadImages()
+		DownloadTask(bookmarks.Illusts, true)
 		if bookmarks.NextURL != "" {
 			ShellStars(user_id, bookmarks.NextURL)
 		}
@@ -117,8 +122,7 @@ func ShellRanking() {
 	if err != nil {
 		fmt.Println("Ranking request fail,please check network", err)
 	} else {
-		download_illusts := DownloadTask(illusts.Illusts)
-		download_illusts.DownloadImages()
+		DownloadTask(illusts.Illusts, true)
 	}
 }
 
@@ -126,8 +130,7 @@ func ShellRecommend(next_url string, auth bool) {
 	if recommended, err := app.App.Recommended(next_url, auth); err != nil {
 		fmt.Println("Recommended request fail,please check network", err)
 	} else {
-		download_illusts := DownloadTask(recommended.Illusts)
-		download_illusts.DownloadImages()
+		DownloadTask(recommended.Illusts, true)
 		if recommended.NextURL != "" {
 			ShellRecommend(recommended.NextURL, auth)
 		}
@@ -137,8 +140,7 @@ func ShellRecommend(next_url string, auth bool) {
 func ShellAuthor(author_id int, page int) {
 	illusts, next, err := app.App.UserIllusts(author_id, "illust", page)
 	if err == nil {
-		download_illusts := DownloadTask(illusts)
-		download_illusts.DownloadImages()
+		DownloadTask(illusts, true)
 		if err == nil && next != 0 { // If there is a next page, continue to request
 			ShellAuthor(author_id, next)
 		}
