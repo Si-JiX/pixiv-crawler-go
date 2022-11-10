@@ -52,7 +52,7 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 	}
 }
 
-func Images(url string, thread *Download) error {
+func Images(url string, thread *Download) {
 	if thread != nil {
 		defer thread.Thread.Done()
 	}
@@ -63,28 +63,28 @@ func Images(url string, thread *Download) error {
 	fullPath := filepath.Join("imageFile", name)
 
 	if _, err := os.Stat(fullPath); err == nil {
-		return nil
+		return
 	}
 
 	output, err := os.Create(fullPath)
 	if err != nil {
-		return err
+		return
 	}
 	defer func(output *os.File) {
 		err = output.Close()
 		if err != nil {
 			log.Println(err)
 		}
-	}(output)
+	}(output) // Close the file when the function returns
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return err
+		return
 	}
 	req.Header.Add("Referer", pixiv.API_BASE)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
@@ -94,19 +94,19 @@ func Images(url string, thread *Download) error {
 	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("download failed: %s", resp.Status)
-	}
+		fmt.Printf("download failed: %s", resp.Status)
+	} else {
+		if _, err = io.Copy(output, resp.Body); err != nil {
+			fmt.Println("download Copy fail", err)
+		}
 
-	_, err = io.Copy(output, resp.Body)
-	if err != nil {
-		return err
 	}
 	if thread != nil {
 		thread.Thread.ProgressCountAdd() // progress count add 1
 		thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
 	}
-	return nil
 }
+
 func (thread *Download) DownloadImages() {
 	if thread.ArrayLength != 0 {
 		fmt.Println("\n\n一共", thread.ArrayLength, "张图片,开始下载中...")
