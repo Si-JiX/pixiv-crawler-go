@@ -48,8 +48,10 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 		return illust_struct // return illust struct
 	}
 	// Thread Download Image List
-	if illust_struct.ArrayLength != 0 {
-		fmt.Println("\n\n一共", illust_struct.ArrayLength, "张图片,开始下载中...")
+	if illust_struct.ArrayLength == 0 {
+		fmt.Println("No image to download in this page")
+	} else {
+		fmt.Println("\n\nthe number of images is", illust_struct.ArrayLength, ",start download...")
 		illust_struct.Thread.ProgressLength = illust_struct.ArrayLength
 		for _, image_url := range illust_struct.DownloadArray {
 			illust_struct.Thread.Add()
@@ -57,8 +59,7 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 		}
 		illust_struct.Progress.ProgressEnd()
 		illust_struct.Thread.Close() // Wait for all threads to finish
-	} else {
-		fmt.Println("add image list fail,please check image list")
+
 	}
 	illust_struct.DownloadArray = nil
 	return nil
