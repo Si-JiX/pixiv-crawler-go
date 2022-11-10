@@ -79,6 +79,10 @@ func (resp *Response) Content() []byte {
 	return resp.content
 }
 
+func (resp *Response) GetBody() io.ReadCloser {
+	return resp.Body
+}
+
 func (resp *Response) Text() string {
 	resp.Content() //	Init resp.content
 	resp.text = string(resp.content)

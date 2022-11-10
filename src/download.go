@@ -6,6 +6,7 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/progressbar"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/threadpool"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
@@ -13,7 +14,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -65,7 +65,6 @@ func Images(url string, thread *Download) {
 	if _, err := os.Stat(fullPath); err == nil {
 		return
 	}
-
 	output, err := os.Create(fullPath)
 	if err != nil {
 		return
@@ -77,30 +76,11 @@ func Images(url string, thread *Download) {
 		}
 	}(output) // Close the file when the function returns
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return
+	Body := request.Get(url, nil, map[string]string{"Referer": pixiv.API_BASE}).GetBody()
+	if _, err = io.Copy(output, Body); err != nil {
+		fmt.Println("download Copy fail", err)
 	}
-	req.Header.Add("Referer", pixiv.API_BASE)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return
-	}
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("download failed: %s", resp.Status)
-	} else {
-		if _, err = io.Copy(output, resp.Body); err != nil {
-			fmt.Println("download Copy fail", err)
-		}
-
-	}
 	if thread != nil {
 		thread.Thread.ProgressCountAdd() // progress count add 1
 		thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
