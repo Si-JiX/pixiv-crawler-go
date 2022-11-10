@@ -14,6 +14,7 @@ var Vars = struct {
 	UserID            int    `mapstructure:"pixiv_user_id"`
 	ThreadMax         int    `mapstructure:"thread_max"`
 	VersionName       string `mapstructure:"version_name"`
+	CacheDir          string `mapstructure:"cache_dir"`
 }{}
 
 type VarsConfig struct {
@@ -57,6 +58,7 @@ func VarsConfigInit() {
 	VarsFile.Vipers.SetConfigType("json")
 	VarsFile.Vipers.AddConfigPath(".")
 	// path to look for the config file in
+	VarsFile.Vipers.SetDefault("cache_dir", "imageFile")
 	VarsFile.Vipers.SetDefault("host", "https://app-api.pixiv.net")
 	VarsFile.Vipers.SetDefault("thread_max", 16)
 	VarsFile.Vipers.Set("version_name", "1.9.2")

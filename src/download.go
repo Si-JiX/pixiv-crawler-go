@@ -44,12 +44,24 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 		ArrayLength:   len(ImageList),
 		Progress:      progressbar.NewProgress(len(ImageList), ""),
 	}
-	if start {
-		illust_struct.DownloadImages()
-		return nil
-	} else {
-		return illust_struct
+	if !start {
+		return illust_struct // return illust struct
 	}
+	// Thread Download Image List
+	if illust_struct.ArrayLength != 0 {
+		fmt.Println("\n\n一共", illust_struct.ArrayLength, "张图片,开始下载中...")
+		illust_struct.Thread.ProgressLength = illust_struct.ArrayLength
+		for _, image_url := range illust_struct.DownloadArray {
+			illust_struct.Thread.Add()
+			go Images(image_url, illust_struct) // download image by thread
+		}
+		illust_struct.Progress.ProgressEnd()
+		illust_struct.Thread.Close() // Wait for all threads to finish
+	} else {
+		fmt.Println("add image list fail,please check image list")
+	}
+	illust_struct.DownloadArray = nil
+	return nil
 }
 
 func Images(url string, thread *Download) {
@@ -60,7 +72,7 @@ func Images(url string, thread *Download) {
 	if name == "" {
 		name = filepath.Base(url)
 	}
-	fullPath := filepath.Join("imageFile", name)
+	fullPath := filepath.Join(config.Vars.CacheDir, name)
 
 	if _, err := os.Stat(fullPath); err == nil {
 		return
@@ -85,22 +97,6 @@ func Images(url string, thread *Download) {
 		thread.Thread.ProgressCountAdd() // progress count add 1
 		thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
 	}
-}
-
-func (thread *Download) DownloadImages() {
-	if thread.ArrayLength != 0 {
-		fmt.Println("\n\n一共", thread.ArrayLength, "张图片,开始下载中...")
-		thread.Thread.ProgressLength = thread.ArrayLength
-		for _, image_url := range thread.DownloadArray {
-			thread.Thread.Add()
-			go Images(image_url, thread)
-		}
-		thread.Progress.ProgressEnd()
-		thread.Thread.Close() // Wait for all threads to finish
-	} else {
-		fmt.Println("add image list fail,please check image list")
-	}
-	thread.DownloadArray = nil
 }
 
 func DownloaderSingly(illust_id string) {
@@ -194,3 +190,19 @@ func ShellAuthor(author_id int, page int) {
 		fmt.Println("Request author info fail,please check network", err)
 	}
 }
+
+//func (thread *Download) DownloadImages() {
+//	if thread.ArrayLength != 0 {
+//		fmt.Println("\n\n一共", thread.ArrayLength, "张图片,开始下载中...")
+//		thread.Thread.ProgressLength = thread.ArrayLength
+//		for _, image_url := range thread.DownloadArray {
+//			thread.Thread.Add()
+//			go Images(image_url, thread)
+//		}
+//		thread.Progress.ProgressEnd()
+//		thread.Thread.Close() // Wait for all threads to finish
+//	} else {
+//		fmt.Println("add image list fail,please check image list")
+//	}
+//	thread.DownloadArray = nil
+//}
