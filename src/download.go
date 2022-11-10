@@ -23,7 +23,7 @@ type Download struct {
 	Progress      *progressbar.Bar
 }
 
-func Downloader(Illusts []pixivstruct.Illust) *Download {
+func DownloadTask(Illusts []pixivstruct.Illust) *Download {
 	var ImageList []string
 	for _, illust := range Illusts {
 		if illust.MetaSinglePage.OriginalImageURL == "" {
@@ -68,7 +68,7 @@ func (thread *Download) DownloadImages() {
 	thread.DownloadArray = nil
 }
 
-func CurrentDownloader(illust_id string) {
+func DownloaderSingly(illust_id string) {
 	if utils.ListFind(file.ShowFileList("./imageFile"), illust_id) {
 		fmt.Println(illust_id, "is exist, skip")
 	} else {
@@ -91,7 +91,7 @@ func GET_USER_FOLLOWING(UserID int) {
 	}
 	fmt.Println("一共", len(following.UserPreviews), "个关注的用户")
 	for _, user := range following.UserPreviews {
-		GET_AUTHOR_INFO(user.User.ID, 0)
+		ShellAuthor(user.User.ID, 0)
 	}
 }
 
@@ -100,8 +100,7 @@ func ShellStars(user_id int, next_url string) {
 	if err != nil {
 		fmt.Println("Request user bookmarks illust fail,please check network", err)
 	} else {
-
-		download_illusts := Downloader(bookmarks.Illusts)
+		download_illusts := DownloadTask(bookmarks.Illusts)
 		download_illusts.DownloadImages()
 		if bookmarks.NextURL != "" {
 			ShellStars(user_id, bookmarks.NextURL)
@@ -118,7 +117,7 @@ func ShellRanking() {
 	if err != nil {
 		fmt.Println("Ranking request fail,please check network", err)
 	} else {
-		download_illusts := Downloader(illusts.Illusts)
+		download_illusts := DownloadTask(illusts.Illusts)
 		download_illusts.DownloadImages()
 	}
 }
@@ -127,7 +126,7 @@ func ShellRecommend(next_url string, auth bool) {
 	if recommended, err := app.App.Recommended(next_url, auth); err != nil {
 		fmt.Println("Recommended request fail,please check network", err)
 	} else {
-		download_illusts := Downloader(recommended.Illusts)
+		download_illusts := DownloadTask(recommended.Illusts)
 		download_illusts.DownloadImages()
 		if recommended.NextURL != "" {
 			ShellRecommend(recommended.NextURL, auth)
@@ -135,14 +134,13 @@ func ShellRecommend(next_url string, auth bool) {
 	}
 }
 
-func GET_AUTHOR_INFO(author_id int, page int) {
+func ShellAuthor(author_id int, page int) {
 	illusts, next, err := app.App.UserIllusts(author_id, "illust", page)
 	if err == nil {
-		download_illusts := Downloader(illusts)
+		download_illusts := DownloadTask(illusts)
 		download_illusts.DownloadImages()
-		if err == nil && next != 0 {
-			// If there is a next page, continue to request
-			GET_AUTHOR_INFO(author_id, next)
+		if err == nil && next != 0 { // If there is a next page, continue to request
+			ShellAuthor(author_id, next)
 		}
 	} else {
 		fmt.Println("Request author info fail,please check network", err)
