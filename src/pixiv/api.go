@@ -52,7 +52,6 @@ func (a *AppPixivAPI) Download(id string, path string) *pixivstruct.Illust {
 	return illust
 }
 
-// DownloadMain image to file (use 6.0 app-api)
 func DownloadMain(client *http.Client, url, path, name string) (int64, error) {
 	if path == "" {
 		return 0, fmt.Errorf("download path needed")
