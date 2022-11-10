@@ -13,7 +13,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils/pixivstruct"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -69,31 +68,21 @@ func Images(url string, thread *Download) {
 	if thread != nil {
 		defer thread.Thread.Done()
 	}
-	name := filepath.Base(url)
-	if name == "" {
-		name = filepath.Base(url)
+	var fullPath string
+	if name := filepath.Base(url); name == "" {
+		fullPath = filepath.Join(config.Vars.CacheDir, filepath.Base(url))
+	} else {
+		fullPath = filepath.Join(config.Vars.CacheDir, name)
 	}
-	fullPath := filepath.Join(config.Vars.CacheDir, name)
-
-	if _, err := os.Stat(fullPath); err == nil {
-		return
-	}
-	output, err := os.Create(fullPath)
-	if err != nil {
-		return
-	}
-	defer func(output *os.File) {
-		err = output.Close()
-		if err != nil {
-			log.Println(err)
+	if output, err := os.Create(fullPath); err != nil {
+		fmt.Println("create file fail", err)
+	} else {
+		defer output.Close() // Close the file when the function returns
+		Body := request.Get(url, nil, map[string]string{"Referer": pixiv.API_BASE}).GetBody()
+		if _, err = io.Copy(output, Body); err != nil {
+			fmt.Println("download Copy fail", err)
 		}
-	}(output) // Close the file when the function returns
-
-	Body := request.Get(url, nil, map[string]string{"Referer": pixiv.API_BASE}).GetBody()
-	if _, err = io.Copy(output, Body); err != nil {
-		fmt.Println("download Copy fail", err)
 	}
-
 	if thread != nil {
 		thread.Thread.ProgressCountAdd() // progress count add 1
 		thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
