@@ -103,7 +103,7 @@ func (thread *Download) DownloadImages() {
 	thread.DownloadArray = nil
 }
 
-func DownloaderSingly(illust_id string) error {
+func DownloaderSingly(illust_id string) {
 	var urls []string
 	if utils.ListFind(file.ShowFileList("./imageFile"), illust_id) {
 		fmt.Println(illust_id, "is exist, skip")
@@ -111,11 +111,11 @@ func DownloaderSingly(illust_id string) error {
 		illust, err := app.App.IllustDetail(illust_id)
 		if err != nil {
 			fmt.Println("download fail", err)
-			return err
+			return
 		}
 		if illust == nil || illust.MetaSinglePage == nil {
 			fmt.Println("download fail,illust is nil")
-			return nil
+			return
 		}
 		if illust.MetaSinglePage.OriginalImageURL == "" {
 			for _, img := range illust.MetaPages {
@@ -128,7 +128,6 @@ func DownloaderSingly(illust_id string) error {
 			Images(url, nil)
 		}
 	}
-	return nil
 }
 
 func GET_USER_FOLLOWING(UserID int) {

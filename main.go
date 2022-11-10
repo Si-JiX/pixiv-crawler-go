@@ -20,8 +20,8 @@ func init() {
 		if accessToken, err := request.ChromeDriverLogin(); err != nil {
 			panic(err)
 		} else {
-			config.VarsFile.Vipers.Set("PIXIV_REFRESH_TOKEN", accessToken.RefreshToken)
-			config.VarsFile.Vipers.Set("PIXIV_TOKEN", accessToken.AccessToken)
+			config.VarsFile.Vipers.Set("pixiv_refresh_token", accessToken.RefreshToken)
+			config.VarsFile.Vipers.Set("pixiv_token", accessToken.AccessToken)
 			config.VarsFile.Vipers.Set("PIXIV_USER_ID", accessToken.User.ID)
 			config.VarsFile.SaveConfig()
 		}

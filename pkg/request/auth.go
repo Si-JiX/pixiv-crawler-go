@@ -45,7 +45,7 @@ func RefreshAuth() bool {
 		fmt.Println("refresh auth error  ", response.AccessToken)
 		return false
 	} else {
-		config.VarsFile.Vipers.Set("PIXIV_TOKEN", response.AccessToken)
+		config.VarsFile.Vipers.Set("pixiv_token", response.AccessToken)
 		config.VarsFile.SaveConfig()
 		fmt.Println("refresh auth success,new token: ", response.AccessToken)
 	}
