@@ -52,12 +52,10 @@ func DownloadTask(Illusts []pixivstruct.Illust, start bool) *Download {
 	}
 }
 
-func (thread *Download) Images(url string) error {
-	defer thread.Thread.Done()
-	//_, e := pixiv.DownloadMain(&http.Client{}, url, "imageFile", filepath.Base(url))
-	//if e != nil {
-	//	fmt.Println(e)
-	//}
+func Images(url string, thread *Download) error {
+	if thread != nil {
+		defer thread.Thread.Done()
+	}
 	name := filepath.Base(url)
 	if name == "" {
 		name = filepath.Base(url)
@@ -103,8 +101,10 @@ func (thread *Download) Images(url string) error {
 	if err != nil {
 		return err
 	}
-	thread.Thread.ProgressCountAdd() // progress count add 1
-	thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
+	if thread != nil {
+		thread.Thread.ProgressCountAdd() // progress count add 1
+		thread.Progress.AddProgressCount(thread.Thread.GetProgressCount())
+	}
 	return nil
 }
 func (thread *Download) DownloadImages() {
@@ -113,7 +113,7 @@ func (thread *Download) DownloadImages() {
 		thread.Thread.ProgressLength = thread.ArrayLength
 		for _, image_url := range thread.DownloadArray {
 			thread.Thread.Add()
-			go thread.Images(image_url)
+			go Images(image_url, thread)
 		}
 		thread.Progress.ProgressEnd()
 		thread.Thread.Close() // Wait for all threads to finish
@@ -123,14 +123,32 @@ func (thread *Download) DownloadImages() {
 	thread.DownloadArray = nil
 }
 
-func DownloaderSingly(illust_id string) {
+func DownloaderSingly(illust_id string) error {
+	var urls []string
 	if utils.ListFind(file.ShowFileList("./imageFile"), illust_id) {
 		fmt.Println(illust_id, "is exist, skip")
 	} else {
-		if illust := app.App.Download(illust_id, "imageFile"); illust != nil {
-			fmt.Printf("image name: %s \t  image id: %d", illust.Title, illust.ID)
+		illust, err := app.App.IllustDetail(illust_id)
+		if err != nil {
+			fmt.Println("download fail", err)
+			return err
+		}
+		if illust == nil || illust.MetaSinglePage == nil {
+			fmt.Println("download fail,illust is nil")
+			return nil
+		}
+		if illust.MetaSinglePage.OriginalImageURL == "" {
+			for _, img := range illust.MetaPages {
+				urls = append(urls, img.Images.Original)
+			}
+		} else {
+			urls = append(urls, illust.MetaSinglePage.OriginalImageURL)
+		}
+		for _, url := range urls {
+			Images(url, nil)
 		}
 	}
+	return nil
 }
 
 func GET_USER_FOLLOWING(UserID int) {
