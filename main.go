@@ -7,7 +7,6 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/request"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/app"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 	"log"
@@ -49,25 +48,25 @@ func main() {
 }
 func command_line_shell(c *cli.Context) error {
 	if arguments.CommandLines.IllustID != "" {
-		src.DownloaderSingly(arguments.CommandLines.IllustID)
+		app.DownloaderSingly(arguments.CommandLines.IllustID)
 
 	} else if arguments.CommandLines.AuthorID != 0 {
-		src.ShellAuthor(arguments.CommandLines.AuthorID, 0)
+		app.ShellAuthor(arguments.CommandLines.AuthorID, 0)
 
 	} else if arguments.CommandLines.URL != "" {
-		src.DownloaderSingly(utils.GetInt(arguments.CommandLines.URL))
+		app.DownloaderSingly(utils.GetInt(arguments.CommandLines.URL))
 
 	} else if arguments.CommandLines.Following {
-		src.GET_USER_FOLLOWING(arguments.CommandLines.UserID)
+		app.GET_USER_FOLLOWING(arguments.CommandLines.UserID)
 
 	} else if arguments.CommandLines.Recommend {
-		src.ShellRecommend("", true)
+		app.ShellRecommend("", true)
 
 	} else if arguments.CommandLines.Ranking {
-		src.ShellRanking()
+		app.ShellRanking()
 
 	} else if arguments.CommandLines.Stars {
-		src.ShellStars(config.Vars.UserID, "")
+		app.ShellStars(config.Vars.UserID, "")
 
 	} else {
 		if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
