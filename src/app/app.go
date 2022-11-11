@@ -5,7 +5,7 @@ import (
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/config"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/file"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/pkg/input"
-	"github.com/VeronicaAlexia/pixiv-crawler-go/src"
+	"github.com/VeronicaAlexia/pixiv-crawler-go/src/download"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/src/pixiv"
 	"github.com/VeronicaAlexia/pixiv-crawler-go/utils"
 )
@@ -35,7 +35,7 @@ func DownloaderSingly(illust_id string) {
 		}
 		for index, url := range urls {
 			fmt.Println("download", illust.Title, "\timage", index+1, "of", len(urls))
-			src.ImagesSingly(url, nil)
+			download.ImagesSingly(url, nil)
 		}
 		fmt.Println("\033[2J")
 	}
@@ -64,7 +64,7 @@ func ShellStars(user_id int, next_url string) {
 	if err != nil {
 		fmt.Println("Request user bookmarks illust fail,please check network", err)
 	} else {
-		src.DownloadTask(bookmarks.Illusts, true)
+		download.DownloadTask(bookmarks.Illusts, true)
 		if bookmarks.NextURL != "" {
 			ShellStars(user_id, bookmarks.NextURL)
 		}
@@ -80,7 +80,7 @@ func ShellRanking() {
 	if err != nil {
 		fmt.Println("Ranking request fail,please check network", err)
 	} else {
-		src.DownloadTask(illusts.Illusts, true)
+		download.DownloadTask(illusts.Illusts, true)
 	}
 }
 
@@ -88,7 +88,7 @@ func ShellRecommend(next_url string, auth bool) {
 	if recommended, err := App.Recommended(next_url, auth); err != nil {
 		fmt.Println("Recommended request fail,please check network", err)
 	} else {
-		src.DownloadTask(recommended.Illusts, true)
+		download.DownloadTask(recommended.Illusts, true)
 		if recommended.NextURL != "" {
 			ShellRecommend(recommended.NextURL, auth)
 		}
@@ -98,7 +98,7 @@ func ShellRecommend(next_url string, auth bool) {
 func ShellAuthor(author_id int, page int) {
 	illusts, next, err := App.UserIllusts(author_id, "illust", page)
 	if err == nil {
-		src.DownloadTask(illusts, true)
+		download.DownloadTask(illusts, true)
 		if err == nil && next != 0 { // If there is a next page, continue to request
 			ShellAuthor(author_id, next)
 		}
